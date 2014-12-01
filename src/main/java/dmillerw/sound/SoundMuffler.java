@@ -10,10 +10,10 @@ import dmillerw.sound.core.CommonProxy;
 /**
  * @author dmillerw
  */
-@Mod(modid = "SoundMuffer++", name = "SoundMuffler++", version = "%MOD_VERSION%")
+@Mod(modid = "SoundMuffler++", name = "SoundMuffler++", version = "%MOD_VERSION%")
 public class SoundMuffler {
 
-    @Mod.Instance("SoundMuffer++")
+    @Mod.Instance("SoundMuffler++")
     public static SoundMuffler instance;
 
     @SidedProxy(serverSide = "dmillerw.sound.core.CommonProxy", clientSide = "dmillerw.sound.client.ClientProxy")
