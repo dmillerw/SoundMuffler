@@ -10,11 +10,11 @@ import java.lang.reflect.Method;
  */
 public class APIHandler {
 
-    public static void openConfigurationGUI(EntityPlayer entityPlayer) {
+    public static void openConfigurationGUI(EntityPlayer entityPlayer, int x, int y, int z) {
         try {
             Class clazz = Class.forName("dmillerw.sound.core.handler.InternalHandler");
-            Method method = clazz.getDeclaredMethod("openConfigurationGUI", EntityPlayer.class);
-            method.invoke(clazz, entityPlayer);
+            Method method = clazz.getDeclaredMethod("openConfigurationGUI", EntityPlayer.class, int.class, int.class, int.class);
+            method.invoke(clazz, entityPlayer, x, y, z);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (NoSuchMethodException e) {

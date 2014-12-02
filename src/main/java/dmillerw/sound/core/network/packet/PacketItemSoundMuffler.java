@@ -2,7 +2,7 @@ package dmillerw.sound.core.network.packet;
 
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
-import dmillerw.sound.api.IMagicalEarmuffs;
+import dmillerw.sound.api.IItemSoundMuffler;
 import dmillerw.sound.api.SoundEntry;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.item.ItemStack;
@@ -10,17 +10,17 @@ import net.minecraft.item.ItemStack;
 /**
  * @author dmillerw
  */
-public class PacketSoundEntry extends CorePacket<PacketSoundEntry> {
+public class PacketItemSoundMuffler extends CorePacket<PacketItemSoundMuffler> {
 
     public static void addSoundEntry(SoundEntry soundEntry) {
-        PacketSoundEntry packet = new PacketSoundEntry();
+        PacketItemSoundMuffler packet = new PacketItemSoundMuffler();
         packet.soundEntry = soundEntry;
         packet.type = Type.ADD;
         packet.sendToServer();
     }
 
     public static void removeSoundEntry(SoundEntry soundEntry) {
-        PacketSoundEntry packet = new PacketSoundEntry();
+        PacketItemSoundMuffler packet = new PacketItemSoundMuffler();
         packet.soundEntry = soundEntry;
         packet.type = Type.REMOVE;
         packet.sendToServer();
@@ -43,13 +43,13 @@ public class PacketSoundEntry extends CorePacket<PacketSoundEntry> {
     }
 
     @Override
-    public IMessage onMessage(PacketSoundEntry message, MessageContext ctx) {
+    public IMessage onMessage(PacketItemSoundMuffler message, MessageContext ctx) {
         ItemStack held = ctx.getServerHandler().playerEntity.getHeldItem();
-        if (held != null && held.getItem() instanceof IMagicalEarmuffs) {
+        if (held != null && held.getItem() instanceof IItemSoundMuffler) {
             if (type == Type.ADD)
-                ((IMagicalEarmuffs) held.getItem()).addSoundEntry(held, message.soundEntry);
+                ((IItemSoundMuffler) held.getItem()).addSoundEntry(held, message.soundEntry);
             else if (type == Type.REMOVE)
-                ((IMagicalEarmuffs) held.getItem()).removeSoundEntry(held, message.soundEntry);
+                ((IItemSoundMuffler) held.getItem()).removeSoundEntry(held, message.soundEntry);
         }
 
         ctx.getServerHandler().playerEntity.updateHeldItem();

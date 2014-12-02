@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * @author dmillerw
  */
-public interface IMagicalEarmuffs {
+public interface IItemSoundMuffler {
 
     @SideOnly(Side.CLIENT)
     public ISound getMuffledSound(ItemStack itemStack, String name, ISound sound);

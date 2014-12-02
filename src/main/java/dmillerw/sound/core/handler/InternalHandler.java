@@ -1,23 +1,35 @@
 package dmillerw.sound.core.handler;
 
+import com.google.common.collect.Lists;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import dmillerw.sound.SoundMuffler;
-import dmillerw.sound.api.IMagicalEarmuffs;
+import dmillerw.sound.api.EventSoundMufflerTile;
+import dmillerw.sound.api.ITileSoundMuffler;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
+
+import java.util.List;
 
 /**
  * @author dmillerw
  */
 public class InternalHandler {
 
-    public static void openConfigurationGUI(EntityPlayer entityPlayer) {
-        ItemStack held = entityPlayer.getHeldItem();
-        if (held == null)
-            return;
+    public static List<ITileSoundMuffler> soundMufflerList = Lists.newArrayList();
 
-        if (!(held.getItem() instanceof IMagicalEarmuffs))
-            return;
+    public static void openConfigurationGUI(EntityPlayer entityPlayer, int x, int y, int z) {
+        entityPlayer.openGui(SoundMuffler.instance, 0, entityPlayer.worldObj, x, y, z);
+    }
 
-        entityPlayer.openGui(SoundMuffler.instance, 0, entityPlayer.worldObj, 0, 0 ,0);
+    @SubscribeEvent
+    public void registerTile(EventSoundMufflerTile.Register event) {
+        soundMufflerList.add(event.tileSoundMuffler);
+        System.out.println(FMLCommonHandler.instance().getEffectiveSide());
+    }
+
+    @SubscribeEvent
+    public void unregisterTile(EventSoundMufflerTile.Unregister event) {
+        soundMufflerList.remove(event.tileSoundMuffler);
+        System.out.println(FMLCommonHandler.instance().getEffectiveSide());
     }
 }

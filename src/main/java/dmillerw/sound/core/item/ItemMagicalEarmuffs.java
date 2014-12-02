@@ -1,7 +1,7 @@
 package dmillerw.sound.core.item;
 
 import com.google.common.collect.Lists;
-import dmillerw.sound.api.IMagicalEarmuffs;
+import dmillerw.sound.api.IItemSoundMuffler;
 import dmillerw.sound.api.SoundEntry;
 import dmillerw.sound.client.sound.SoundHandler;
 import dmillerw.sound.client.sound.SoundMuffled;
@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * @author dmillerw
  */
-public class ItemMagicalEarmuffs extends Item implements IMagicalEarmuffs {
+public class ItemMagicalEarmuffs extends Item implements IItemSoundMuffler {
 
     public ItemMagicalEarmuffs() {
         super();
@@ -36,7 +36,7 @@ public class ItemMagicalEarmuffs extends Item implements IMagicalEarmuffs {
     @Override
     public ItemStack onItemRightClick(ItemStack itemStack, World world, EntityPlayer entityPlayer) {
         if (world.isRemote && entityPlayer.isSneaking()) {
-            InternalHandler.openConfigurationGUI(entityPlayer);
+            InternalHandler.openConfigurationGUI(entityPlayer, 0, 0, 0);
         }
         return itemStack;
     }

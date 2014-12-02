@@ -5,6 +5,7 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import dmillerw.sound.client.sound.SoundHandler;
 import dmillerw.sound.core.CommonProxy;
+import dmillerw.sound.core.handler.InternalHandler;
 import net.minecraftforge.common.MinecraftForge;
 
 /**
@@ -17,6 +18,7 @@ public class ClientProxy extends CommonProxy {
         super.preInit(event);
 
         MinecraftForge.EVENT_BUS.register(new SoundHandler());
+        MinecraftForge.EVENT_BUS.register(new InternalHandler());
     }
 
     @Override

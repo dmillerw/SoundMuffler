@@ -1,14 +1,14 @@
 package dmillerw.sound.client.gui;
 
-import dmillerw.sound.api.IMagicalEarmuffs;
+import dmillerw.sound.api.ITileSoundMuffler;
 import dmillerw.sound.api.SoundEntry;
-import dmillerw.sound.core.network.packet.PacketSoundEntry;
+import dmillerw.sound.core.network.packet.PacketItemSoundMuffler;
+import dmillerw.sound.core.network.packet.PacketTileSoundMuffler;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * @author dmillerw
  */
-public class GuiConfigure extends GuiScreen {
+public class GuiTileSoundMuffler extends GuiScreen {
 
     private static final ResourceLocation GUI_BLANK = new ResourceLocation("soundmuffler++:textures/gui/blank.png");
 
@@ -50,16 +50,14 @@ public class GuiConfigure extends GuiScreen {
 
     private EntityPlayer entityPlayer;
 
-    private ItemStack itemStack;
-    private IMagicalEarmuffs magicalEarmuffs;
+    private ITileSoundMuffler tileSoundMuffler;
 
     private List<SoundEntry> soundEntrySet;
 
-    public GuiConfigure(EntityPlayer entityPlayer) {
+    public GuiTileSoundMuffler(EntityPlayer entityPlayer, ITileSoundMuffler tileSoundMuffler) {
         this.entityPlayer = entityPlayer;
-        this.itemStack = entityPlayer.getHeldItem();
-        this.magicalEarmuffs = (IMagicalEarmuffs) this.itemStack.getItem();
-        this.soundEntrySet = this.magicalEarmuffs.getSoundEntries(itemStack);
+        this.tileSoundMuffler = tileSoundMuffler;
+        this.soundEntrySet = this.tileSoundMuffler.getSoundEntries();
 
         Keyboard.enableRepeatEvents(true);
     }
@@ -172,7 +170,7 @@ public class GuiConfigure extends GuiScreen {
                 SoundEntry soundEntry = new SoundEntry(sound, Integer.parseInt(volume));
 
                 soundEntrySet.add(soundEntry);
-                PacketSoundEntry.addSoundEntry(soundEntry);
+                PacketItemSoundMuffler.addSoundEntry(soundEntry);
 
                 this.textFieldSound.setText("");
                 this.textFieldVolume.setText("");
@@ -229,7 +227,7 @@ public class GuiConfigure extends GuiScreen {
                 SoundEntry soundEntry = soundEntrySet.get(selectedIndex);
                 soundEntrySet.remove(soundEntry);
 
-                PacketSoundEntry.removeSoundEntry(soundEntry);
+                PacketTileSoundMuffler.removeSoundEntry(tileSoundMuffler, soundEntry);
 
                 selectedIndex = -1;
             }
