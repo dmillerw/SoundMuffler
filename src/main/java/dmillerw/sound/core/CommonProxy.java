@@ -10,8 +10,9 @@ import dmillerw.sound.core.block.BlockSoundMuffler;
 import dmillerw.sound.core.block.TileSoundMuffler;
 import dmillerw.sound.core.handler.GuiHandler;
 import dmillerw.sound.core.handler.PlayerHandler;
-import dmillerw.sound.core.item.ItemBrokenEarmuffs;
-import dmillerw.sound.core.item.ItemMagicalEarmuffs;
+import dmillerw.sound.core.item.ItemEarplug;
+import dmillerw.sound.core.item.ItemMagicalEarplugs;
+import dmillerw.sound.core.item.ItemMysteriousEarplugs;
 import dmillerw.sound.core.network.PacketHandler;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
@@ -29,8 +30,9 @@ public class CommonProxy {
 
     public static Block soundMuffler;
 
-    public static Item magicalEarmuffs;
-    public static Item brokenEarmuffs;
+    public static Item earplug;
+    public static Item magicalEarplugs;
+    public static Item mysteriousEarplugs;
 
     public void preInit(FMLPreInitializationEvent event) {
         PacketHandler.initialize();
@@ -39,25 +41,18 @@ public class CommonProxy {
 
         MinecraftForge.EVENT_BUS.register(new PlayerHandler());
 
-        magicalEarmuffs = new ItemMagicalEarmuffs();
-        GameRegistry.registerItem(magicalEarmuffs, "magicalEarmuffs");
-
-        brokenEarmuffs = new ItemBrokenEarmuffs();
-        GameRegistry.registerItem(brokenEarmuffs, "brokenEarmuffs");
-
         soundMuffler = new BlockSoundMuffler();
-        GameRegistry.registerBlock(soundMuffler, "soundMuffler");
+        register(soundMuffler);
         GameRegistry.registerTileEntity(TileSoundMuffler.class, "soundmuffler++:soundMuffler");
 
-        GameRegistry.addRecipe(new ShapedOreRecipe(
-                new ItemStack(magicalEarmuffs),
-                "SSS",
-                "W W",
-                "N N",
-                'S', "stickWood",
-                'W', new ItemStack(Blocks.wool, 1, OreDictionary.WILDCARD_VALUE),
-                'N', Blocks.noteblock
-        ));
+        earplug = new ItemEarplug();
+        register(earplug);
+
+        magicalEarplugs = new ItemMagicalEarplugs();
+        register(magicalEarplugs);
+
+        mysteriousEarplugs = new ItemMysteriousEarplugs();
+        register(mysteriousEarplugs);
 
         GameRegistry.addRecipe(new ShapedOreRecipe(
                 new ItemStack(soundMuffler),
@@ -68,6 +63,20 @@ public class CommonProxy {
                 'N', Blocks.noteblock,
                 'R', Items.redstone
         ));
+
+        GameRegistry.addShapelessRecipe(
+                new ItemStack(earplug),
+                new ItemStack(Blocks.wool, 1, OreDictionary.WILDCARD_VALUE),
+                Items.redstone
+        );
+
+        GameRegistry.addShapelessRecipe(
+                new ItemStack(mysteriousEarplugs),
+                earplug,
+                earplug,
+                Items.redstone
+        );
+
     }
 
     public void init(FMLInitializationEvent event) {
@@ -76,5 +85,13 @@ public class CommonProxy {
 
     public void postInit(FMLPostInitializationEvent event) {
 
+    }
+
+    private void register(Block block) {
+        GameRegistry.registerBlock(block, block.getUnlocalizedName());
+    }
+
+    private void register(Item item) {
+        GameRegistry.registerItem(item, item.getUnlocalizedName());
     }
 }

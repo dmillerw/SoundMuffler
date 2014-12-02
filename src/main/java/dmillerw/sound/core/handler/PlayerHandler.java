@@ -18,7 +18,7 @@ public class PlayerHandler {
 
         ItemStack itemStack = ((EntityPlayer) event.entity).getCurrentArmor(3);
 
-        if (itemStack != null && itemStack.getItem() == CommonProxy.magicalEarmuffs)
-            event.entity.setCurrentItemOrArmor(1, new ItemStack(CommonProxy.brokenEarmuffs));
+        if (itemStack != null && itemStack.getItem() == CommonProxy.magicalEarplugs)
+            event.entity.setCurrentItemOrArmor(1, new ItemStack(CommonProxy.mysteriousEarplugs));
     }
 }

@@ -1,9 +1,9 @@
 package dmillerw.sound.core.block;
 
+import dmillerw.sound.core.TabSoundMuffler;
 import dmillerw.sound.core.handler.InternalHandler;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -18,7 +18,7 @@ public class BlockSoundMuffler extends BlockContainer {
 
         setHardness(1F);
         setResistance(0F);
-        setCreativeTab(CreativeTabs.tabDecorations);
+        setCreativeTab(TabSoundMuffler.TAB);
         setBlockName("soundMuffler");
         setBlockTextureName("soundmuffler++:soundMuffler");
     }

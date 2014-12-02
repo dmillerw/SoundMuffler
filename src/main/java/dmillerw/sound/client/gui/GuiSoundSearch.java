@@ -13,6 +13,7 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.StatCollector;
 import org.apache.commons.lang3.ArrayUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -71,11 +72,11 @@ public class GuiSoundSearch extends GuiScreen {
         this.searchField.setCanLoseFocus(false);
         this.searchField.setEnableBackgroundDrawing(false);
 
-        this.buttonList.add(buttonUp = new GuiUVButton(0, 153, 26, 176, 14, 14, 14, GUI_BLANK).setTooltip("Scroll Up"));
-        this.buttonList.add(buttonDown = new GuiUVButton(1, 153, 46, 176, 28, 14, 14, GUI_BLANK).setTooltip("Scroll Down"));
-        this.buttonList.add(buttonBack = new GuiUVButton(2, 153, 123, 176, 56, 14, 14, GUI_BLANK).setTooltip("Back"));
-        this.buttonList.add(buttonAccept = new GuiUVButton(3, 153, 143, 176, 70, 14, 14, GUI_BLANK).setTooltip("Select"));
-        this.buttonList.add(buttonPlay = new GuiUVButton(4, 153, 103, 176, 84, 14, 14, GUI_BLANK).setTooltip("Preview"));
+        this.buttonList.add(buttonUp = new GuiUVButton(0, 153, 26, 176, 14, 14, 14, GUI_BLANK).setTooltip(StatCollector.translateToLocal("tooltip.scrollUp")));
+        this.buttonList.add(buttonDown = new GuiUVButton(1, 153, 46, 176, 28, 14, 14, GUI_BLANK).setTooltip(StatCollector.translateToLocal("tooltip.scrollDown")));
+        this.buttonList.add(buttonBack = new GuiUVButton(2, 153, 123, 176, 56, 14, 14, GUI_BLANK).setTooltip(StatCollector.translateToLocal("tooltip.back")));
+        this.buttonList.add(buttonAccept = new GuiUVButton(3, 153, 143, 176, 70, 14, 14, GUI_BLANK).setTooltip(StatCollector.translateToLocal("tooltip.select")));
+        this.buttonList.add(buttonPlay = new GuiUVButton(4, 153, 103, 176, 84, 14, 14, GUI_BLANK).setTooltip(StatCollector.translateToLocal("tooltip.preview")));
 
         refresh();
     }

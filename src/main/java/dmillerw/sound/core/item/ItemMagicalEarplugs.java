@@ -4,10 +4,10 @@ import com.google.common.collect.Lists;
 import dmillerw.sound.api.IItemSoundMuffler;
 import dmillerw.sound.api.SoundEntry;
 import dmillerw.sound.client.sound.SoundMuffled;
+import dmillerw.sound.core.TabSoundMuffler;
 import dmillerw.sound.core.handler.InternalHandler;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.SoundCategory;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -22,15 +22,16 @@ import java.util.List;
 /**
  * @author dmillerw
  */
-public class ItemMagicalEarmuffs extends Item implements IItemSoundMuffler {
+public class ItemMagicalEarplugs extends Item implements IItemSoundMuffler {
 
-    public ItemMagicalEarmuffs() {
+    public ItemMagicalEarplugs() {
         super();
 
-        setCreativeTab(CreativeTabs.tabCombat);
+        setCreativeTab(TabSoundMuffler.TAB);
         setMaxStackSize(1);
         setMaxDamage(0);
-        setUnlocalizedName("magicalEarmuffs");
+        setUnlocalizedName("magicalEarplugs");
+        setTextureName("soundmuffler++:earplugs");
     }
 
     @Override

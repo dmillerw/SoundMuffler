@@ -4,19 +4,28 @@ import dmillerw.sound.client.sound.SoundHelper;
 import dmillerw.sound.client.sound.SoundReplaced;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.SoundCategory;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.StatCollector;
+
+import java.util.List;
 
 /**
  * @author dmillerw
  */
-public class ItemBrokenEarmuffs extends ItemMagicalEarmuffs {
+public class ItemMysteriousEarplugs extends ItemMagicalEarplugs {
 
     public static int cooldown = 0;
 
-    public ItemBrokenEarmuffs() {
+    public ItemMysteriousEarplugs() {
         super();
 
-        setUnlocalizedName("brokenEarmuffs");
+        setUnlocalizedName("mysteriousEarplugs");
+    }
+
+    @Override
+    public void addInformation(ItemStack itemStack, EntityPlayer entityPlayer, List list, boolean debug) {
+        list.add(StatCollector.translateToLocal("item.mysteriousEarplugs.tooltip"));
     }
 
     @Override
