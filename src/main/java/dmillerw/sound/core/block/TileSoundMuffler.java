@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import dmillerw.sound.api.EventSoundMufflerTile;
 import dmillerw.sound.api.ITileSoundMuffler;
 import dmillerw.sound.api.SoundEntry;
-import dmillerw.sound.client.sound.SoundHandler;
 import dmillerw.sound.client.sound.SoundMuffled;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.SoundCategory;
@@ -136,7 +135,7 @@ public class TileSoundMuffler extends TileEntity implements ITileSoundMuffler {
     @Override
     public ISound getMuffledSound(String name, ISound sound, SoundCategory soundCategory) {
         for (SoundEntry soundEntry : soundEntryList) {
-            if (SoundHandler.soundMatches(name, soundEntry))
+            if (soundEntry.nameMatches(name))
                 return new SoundMuffled(sound, soundEntry.volumeModifier);
         }
         return sound;
@@ -159,7 +158,7 @@ public class TileSoundMuffler extends TileEntity implements ITileSoundMuffler {
         Iterator<SoundEntry> iterator = soundEntryList.iterator();
         while (iterator.hasNext()) {
             SoundEntry soundEntry1 = iterator.next();
-            if (!removed && SoundHandler.soundMatches(soundEntry.name, soundEntry1)) {
+            if (!removed && soundEntry1.nameMatches(soundEntry.name)) {
                 iterator.remove();
                 removed = true;
             }

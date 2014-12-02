@@ -1,6 +1,6 @@
 package dmillerw.sound.core.item;
 
-import dmillerw.sound.client.sound.SoundHandler;
+import dmillerw.sound.client.sound.SoundHelper;
 import dmillerw.sound.client.sound.SoundReplaced;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.SoundCategory;
@@ -36,7 +36,7 @@ public class ItemBrokenEarmuffs extends ItemMagicalEarmuffs {
         // Fire a random sound once per 5 sounds
         if (cooldown == 0) {
             cooldown = 5;
-            return SoundHandler.getRandomSound(sound, soundCategory);
+            return SoundHelper.getRandomSound(sound, soundCategory);
         } else {
             cooldown--;
             return new SoundReplaced(sound, sound.getPositionedSoundLocation());

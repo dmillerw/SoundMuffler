@@ -49,6 +49,26 @@ public class SoundEntry {
         packetBuffer.writeInt(volumeModifier);
     }
 
+    public boolean nameMatches(String name) {
+        name = name.replace(".", "/");
+        String entryName = this.name.replace(".", "/");
+        String[] soundSplit = name.split("/");
+        String[] soundEntrySplit = entryName.split("/");
+
+        if (soundSplit.length != soundEntrySplit.length)
+            return false;
+
+        for (int i=0; i<soundSplit.length; i++) {
+            String one = soundSplit[i];
+            String two = soundEntrySplit[i];
+
+            if (one.equals(two) || (one.equals("*") || two.equals("*")))
+                return true;
+        }
+
+        return false;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

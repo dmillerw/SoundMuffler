@@ -3,7 +3,6 @@ package dmillerw.sound.core.item;
 import com.google.common.collect.Lists;
 import dmillerw.sound.api.IItemSoundMuffler;
 import dmillerw.sound.api.SoundEntry;
-import dmillerw.sound.client.sound.SoundHandler;
 import dmillerw.sound.client.sound.SoundMuffled;
 import dmillerw.sound.core.handler.InternalHandler;
 import net.minecraft.client.audio.ISound;
@@ -62,7 +61,7 @@ public class ItemMagicalEarmuffs extends Item implements IItemSoundMuffler {
 
         for (int i=0; i<nbtTagList.tagCount(); i++) {
             SoundEntry soundEntry = SoundEntry.readFromNBT(nbtTagList.getCompoundTagAt(i));
-            if (SoundHandler.soundMatches(name, soundEntry)) {
+            if (soundEntry.nameMatches(name)) {
                 return new SoundMuffled(sound, soundEntry.volumeModifier);
             }
         }
