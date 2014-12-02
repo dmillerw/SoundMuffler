@@ -1,5 +1,7 @@
 package dmillerw.sound.client.sound;
 
+import baubles.api.BaublesApi;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -9,6 +11,7 @@ import dmillerw.sound.core.handler.InternalHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.sound.PlaySoundEvent17;
 
@@ -38,6 +41,20 @@ public class SoundHandler {
                 ISound muffled = SoundHelper.getMuffledSound(event.name, event.sound, event.category, itemStack);
                 if (sound == null && muffled != null) {
                     sound = muffled;
+                }
+            }
+        }
+
+        if (Loader.isModLoaded("Baubles")) {
+            // Baubles fire next
+            IInventory baublesInventory = BaublesApi.getBaubles(player);
+            for (int i = 0; i < baublesInventory.getSizeInventory(); i++) {
+                ItemStack itemStack = baublesInventory.getStackInSlot(i);
+                if (itemStack != null && itemStack.getItem() instanceof IItemSoundMuffler) {
+                    ISound muffled = SoundHelper.getMuffledSound(event.name, event.sound, event.category, itemStack);
+                    if (sound == null && muffled != null) {
+                        sound = muffled;
+                    }
                 }
             }
         }

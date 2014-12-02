@@ -1,5 +1,6 @@
 package dmillerw.sound.core;
 
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -13,6 +14,8 @@ import dmillerw.sound.core.handler.PlayerHandler;
 import dmillerw.sound.core.item.ItemEarplug;
 import dmillerw.sound.core.item.ItemMagicalEarplugs;
 import dmillerw.sound.core.item.ItemMysteriousEarplugs;
+import dmillerw.sound.core.item.bauble.BaubleMagicalEarplugs;
+import dmillerw.sound.core.item.bauble.BaubleMysteriousEarplugs;
 import dmillerw.sound.core.network.PacketHandler;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
@@ -49,9 +52,15 @@ public class CommonProxy {
         register(earplug);
 
         magicalEarplugs = new ItemMagicalEarplugs();
+        if (Loader.isModLoaded("Baubles")) {
+            magicalEarplugs = new BaubleMagicalEarplugs();
+        }
         register(magicalEarplugs);
 
         mysteriousEarplugs = new ItemMysteriousEarplugs();
+        if (Loader.isModLoaded("Baubles")) {
+            mysteriousEarplugs = new BaubleMysteriousEarplugs();
+        }
         register(mysteriousEarplugs);
 
         GameRegistry.addRecipe(new ShapedOreRecipe(
