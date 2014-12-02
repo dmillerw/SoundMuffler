@@ -33,9 +33,9 @@ public class ItemBrokenEarmuffs extends ItemMagicalEarmuffs {
 
     @Override
     public ISound getMuffledSound(ItemStack itemStack, String name, ISound sound, SoundCategory soundCategory) {
-        // Fire a random sound once per 5 sounds
+        // Fire a random sound every other sound
         if (cooldown == 0) {
-            cooldown = 5;
+            cooldown = 1;
             return SoundHelper.getRandomSound(sound, soundCategory);
         } else {
             cooldown--;
