@@ -9,6 +9,7 @@ import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.SoundCategory;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -35,8 +36,16 @@ public class ItemMagicalEarmuffs extends Item implements IItemSoundMuffler {
 
     @Override
     public ItemStack onItemRightClick(ItemStack itemStack, World world, EntityPlayer entityPlayer) {
-        if (world.isRemote && entityPlayer.isSneaking()) {
+        if (entityPlayer.isSneaking()) {
             InternalHandler.openConfigurationGUI(entityPlayer, 0, 0, 0);
+        } else {
+            int index = EntityLiving.getArmorPosition(itemStack) - 1;
+            ItemStack currentArmor = entityPlayer.getCurrentArmor(index);
+
+            if (currentArmor == null) {
+                entityPlayer.setCurrentItemOrArmor(index + 1, itemStack.copy());
+                itemStack.stackSize = 0;
+            }
         }
         return itemStack;
     }

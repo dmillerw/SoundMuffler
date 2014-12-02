@@ -4,9 +4,7 @@ import dmillerw.sound.client.sound.SoundHelper;
 import dmillerw.sound.client.sound.SoundReplaced;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.client.audio.SoundCategory;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
 
 /**
  * @author dmillerw
@@ -24,11 +22,6 @@ public class ItemBrokenEarmuffs extends ItemMagicalEarmuffs {
     @Override
     public boolean hasEffect(ItemStack itemStack, int pass) {
         return true;
-    }
-
-    @Override
-    public ItemStack onItemRightClick(ItemStack itemStack, World world, EntityPlayer entityPlayer) {
-        return itemStack;
     }
 
     @Override

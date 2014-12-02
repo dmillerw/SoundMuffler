@@ -14,6 +14,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.ResourceLocation;
 import org.apache.commons.lang3.ArrayUtils;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.util.List;
@@ -69,11 +70,11 @@ public class GuiSoundSearch extends GuiScreen {
         this.searchField.setCanLoseFocus(false);
         this.searchField.setEnableBackgroundDrawing(false);
 
-        this.buttonList.add(buttonUp = new GuiUVButton(0, 153, 26, 176, 14, 14, 14, GUI_BLANK));
-        this.buttonList.add(buttonDown = new GuiUVButton(1, 153, 46, 176, 28, 14, 14, GUI_BLANK));
-        this.buttonList.add(buttonBack = new GuiUVButton(2, 153, 123, 176, 56, 14, 14, GUI_BLANK));
-        this.buttonList.add(buttonAccept = new GuiUVButton(3, 153, 143, 176, 70, 14, 14, GUI_BLANK));
-        this.buttonList.add(buttonPlay = new GuiUVButton(4, 153, 103, 176, 84, 14, 14, GUI_BLANK));
+        this.buttonList.add(buttonUp = new GuiUVButton(0, 153, 26, 176, 14, 14, 14, GUI_BLANK).setTooltip("Scroll Up"));
+        this.buttonList.add(buttonDown = new GuiUVButton(1, 153, 46, 176, 28, 14, 14, GUI_BLANK).setTooltip("Scroll Down"));
+        this.buttonList.add(buttonBack = new GuiUVButton(2, 153, 123, 176, 56, 14, 14, GUI_BLANK).setTooltip("Back"));
+        this.buttonList.add(buttonAccept = new GuiUVButton(3, 153, 143, 176, 70, 14, 14, GUI_BLANK).setTooltip("Select"));
+        this.buttonList.add(buttonPlay = new GuiUVButton(4, 153, 103, 176, 84, 14, 14, GUI_BLANK).setTooltip("Preview"));
 
         refresh();
     }
@@ -87,6 +88,8 @@ public class GuiSoundSearch extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partial) {
+        scrollMouse(Mouse.getDWheel());
+
         mc.getTextureManager().bindTexture(GUI_BLANK);
         drawTexturedModalRect(guiLeft, guiTop, 0, 0, X_SIZE, Y_SIZE);
 
@@ -122,6 +125,23 @@ public class GuiSoundSearch extends GuiScreen {
         GL11.glTranslated(guiLeft, guiTop, 0);
         super.drawScreen(mouseX - guiLeft, mouseY - guiTop, partial);
         GL11.glPopMatrix();
+
+        for (int i = 0; i < this.buttonList.size(); ++i) {
+            GuiButton guiButton = (GuiButton) this.buttonList.get(i);
+            if (guiButton instanceof GuiUVButton)
+                ((GuiUVButton) guiButton).drawTooltip(mc, mouseX, mouseY);
+        }
+    }
+
+    private void scrollMouse(int theta) {
+        if (theta > 0) {
+            listOffset -= 1;
+            if (listOffset < 0) listOffset = 0;
+        } else if (theta < 0) {
+            final int max = Math.max(0, listContents.size() - MAX_LINE_COUNT);
+            listOffset += 1;
+            if (listOffset > max) listOffset = max;
+        }
     }
 
     @Override
@@ -141,7 +161,7 @@ public class GuiSoundSearch extends GuiScreen {
             if (mouseX >= minX && mouseX <= maxX && mouseY >= minY && mouseY <= maxY) {
                 selectedIndex = listOffset + i;
                 long timeSinceLastClick = System.currentTimeMillis() - lastClickTime;
-                if (timeSinceLastClick <= 500) {
+                if (timeSinceLastClick <= 250) {
                     String text = searchField.getText();
                     SoundEntryString soundEntryString = listContents.get(selectedIndex);
                     if (text == null || text.isEmpty()) {
@@ -225,7 +245,7 @@ public class GuiSoundSearch extends GuiScreen {
             String[] splitText = text.replace(".", "/").split("/");
             String[] splitPath = path.replace(".", "/").split("/");
 
-            int lastIndex = -1;
+            int displayIndex = -1;
             String display = "";
 
             // Loop through each segment of the FULL sound name
@@ -233,7 +253,7 @@ public class GuiSoundSearch extends GuiScreen {
                 // If the index of the path segment is beyond the length of the search text, simply display
                 // the last segment, and break out
                 if (i >= splitText.length) {
-                    lastIndex = i;
+                    displayIndex = i;
                     display = splitPath[i];
                     break;
                 }
@@ -241,14 +261,14 @@ public class GuiSoundSearch extends GuiScreen {
                 // Otherwise, see if the path segment and the search segment are equal.
                 // If so, move on to the next one. Otherwise, display and break
                 if (!splitPath[i].equals(splitText[i])) {
-                    lastIndex = i;
+                    displayIndex = i;
                     display = splitPath[i];
                     break;
                 }
             }
 
             // If we got through the loop without assigning display, simply set
-            // it to the last segment of the full path and set the end flag
+            // it to the last segment of the full path
             if (display == null || display.isEmpty()) {
                 display = splitPath[splitPath.length - 1];
             }
@@ -259,11 +279,11 @@ public class GuiSoundSearch extends GuiScreen {
 
             // If last index is set, we broke out early, so the path is set to the segments
             // found before the breakout
-            if (lastIndex != -1) {
-                fullPath = Strings.join(ArrayUtils.subarray(splitPath, 0, lastIndex + 1), ".");
+            if (displayIndex != -1) {
+                fullPath = Strings.join(ArrayUtils.subarray(splitPath, 0, displayIndex + 1), ".");
             }
 
-            temporarySet.add(new SoundEntryString(display, resourceLocation.getResourceDomain(), fullPath, path.endsWith(display)));
+            temporarySet.add(new SoundEntryString(display, resourceLocation.getResourceDomain(), fullPath, path.endsWith(display) && displayIndex == splitPath.length - 1));
         }
 
         listContents.addAll(temporarySet);

@@ -16,6 +16,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import java.util.List;
@@ -42,6 +43,22 @@ public abstract class GuiSoundMuffler extends GuiScreen {
     private static int lastX;
     private static int lastY;
     private static int lastZ;
+    private int guiLeft;
+    private int guiTop;
+    private int listOffset = 0;
+    private int selectedIndex = -1;
+    private GuiTextField textFieldSound;
+    private GuiTextField textFieldVolume;
+    private GuiUVButton buttonUp;
+    private GuiUVButton buttonDown;
+    private GuiUVButton buttonDelete;
+    private GuiUVButton buttonSearch;
+    private List<SoundEntry> soundEntryList;
+    public GuiSoundMuffler(List<SoundEntry> soundEntryList) {
+        this.soundEntryList = soundEntryList;
+
+        Keyboard.enableRepeatEvents(true);
+    }
 
     public static void cacheLastCoordinates(int x, int y, int z) {
         lastX = x;
@@ -51,28 +68,6 @@ public abstract class GuiSoundMuffler extends GuiScreen {
 
     public static void reopen() {
         InternalHandler.openConfigurationGUI(Minecraft.getMinecraft().thePlayer, lastX, lastY, lastZ);
-    }
-
-    private int guiLeft;
-    private int guiTop;
-
-    private int listOffset = 0;
-    private int selectedIndex = -1;
-
-    private GuiTextField textFieldSound;
-    private GuiTextField textFieldVolume;
-
-    private GuiUVButton buttonUp;
-    private GuiUVButton buttonDown;
-    private GuiUVButton buttonDelete;
-    private GuiUVButton buttonSearch;
-
-    private List<SoundEntry> soundEntryList;
-
-    public GuiSoundMuffler(List<SoundEntry> soundEntryList) {
-        this.soundEntryList = soundEntryList;
-
-        Keyboard.enableRepeatEvents(true);
     }
 
     @Override
@@ -99,21 +94,27 @@ public abstract class GuiSoundMuffler extends GuiScreen {
         this.textFieldSound = new GuiTextField(mc.fontRenderer, guiLeft + 29, guiTop + 11, 101, 20);
         this.textFieldSound.setFocused(true);
         this.textFieldSound.setEnableBackgroundDrawing(false);
-        if (textFieldOverride != null && !textFieldOverride.isEmpty())
+        if (textFieldOverride != null && !textFieldOverride.isEmpty()) {
+            if (textFieldOverride.charAt(0) == '.')
+                textFieldOverride = textFieldOverride.substring(1, textFieldOverride.length());
+
             this.textFieldSound.setText(textFieldOverride);
+        }
 
         this.textFieldVolume = new GuiTextField(mc.fontRenderer, guiLeft + 145, guiTop + 11, 18, 20);
         this.textFieldVolume.setFocused(false);
         this.textFieldVolume.setEnableBackgroundDrawing(false);
 
-        this.buttonList.add(buttonUp = new GuiUVButton(0, 153, 26, 176, 14, 14, 14, GUI_BLANK));
-        this.buttonList.add(buttonDown = new GuiUVButton(1, 153, 46, 176, 28, 14, 14, GUI_BLANK));
-        this.buttonList.add(buttonDelete = new GuiUVButton(2, 153, 143, 176, 0, 14, 14, GUI_BLANK));
-        this.buttonList.add(buttonSearch = new GuiUVButton(3, 7, 7, 176, 41, 14, 14, GUI_BLANK));
+        this.buttonList.add(buttonUp = new GuiUVButton(0, 153, 26, 176, 14, 14, 14, GUI_BLANK).setTooltip("Scroll Up"));
+        this.buttonList.add(buttonDown = new GuiUVButton(1, 153, 46, 176, 28, 14, 14, GUI_BLANK).setTooltip("Scroll Down"));
+        this.buttonList.add(buttonDelete = new GuiUVButton(2, 153, 143, 176, 0, 14, 14, GUI_BLANK).setTooltip("Remove Selected Entry"));
+        this.buttonList.add(buttonSearch = new GuiUVButton(3, 7, 7, 176, 41, 14, 14, GUI_BLANK).setTooltip("Search"));
     }
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partial) {
+        scrollMouse(Mouse.getDWheel());
+
         mc.getTextureManager().bindTexture(GUI_BLANK);
         drawTexturedModalRect(guiLeft, guiTop, 0, 0, X_SIZE, Y_SIZE);
 
@@ -157,6 +158,23 @@ public abstract class GuiSoundMuffler extends GuiScreen {
         GL11.glTranslated(guiLeft, guiTop, 0);
         super.drawScreen(mouseX - guiLeft, mouseY - guiTop, partial);
         GL11.glPopMatrix();
+
+        for (int i = 0; i < this.buttonList.size(); ++i) {
+            GuiButton guiButton = (GuiButton) this.buttonList.get(i);
+            if (guiButton instanceof GuiUVButton)
+                ((GuiUVButton) guiButton).drawTooltip(mc, mouseX, mouseY);
+        }
+    }
+
+    private void scrollMouse(int theta) {
+        if (theta > 0) {
+            listOffset -= 1;
+            if (listOffset < 0) listOffset = 0;
+        } else if (theta < 0) {
+            final int max = Math.max(0, soundEntryList.size() - MAX_LINE_COUNT);
+            listOffset += 1;
+            if (listOffset > max) listOffset = max;
+        }
     }
 
     @Override
