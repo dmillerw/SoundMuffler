@@ -20,6 +20,7 @@ public class BlockSoundMuffler extends BlockContainer {
         setResistance(0F);
         setCreativeTab(CreativeTabs.tabDecorations);
         setBlockName("soundMuffler");
+        setBlockTextureName("soundmuffler++:soundMuffler");
     }
 
     @Override

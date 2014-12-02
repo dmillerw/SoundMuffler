@@ -24,9 +24,10 @@ import java.util.List;
  */
 public class TileSoundMuffler extends TileEntity implements ITileSoundMuffler {
 
-    private static final int RANGE = 32;
+    private static final int RANGE = 64;
 
     private List<SoundEntry> soundEntryList = Lists.newArrayList();
+    private boolean registered = false;
 
     private void register() {
         if (registered) return;
@@ -39,8 +40,6 @@ public class TileSoundMuffler extends TileEntity implements ITileSoundMuffler {
         MinecraftForge.EVENT_BUS.post(new EventSoundMufflerTile.Unregister(this));
         registered = false;
     }
-
-    private boolean registered = false;
 
     @Override
     public void updateEntity() {
@@ -138,7 +137,7 @@ public class TileSoundMuffler extends TileEntity implements ITileSoundMuffler {
             if (soundEntry.nameMatches(name))
                 return new SoundMuffled(sound, soundEntry.volumeModifier);
         }
-        return sound;
+        return null;
     }
 
     @Override

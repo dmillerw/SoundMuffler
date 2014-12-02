@@ -72,31 +72,31 @@ public class SoundHelper {
 
     public static ISound getMuffledSound(String name, ISound sound, SoundCategory soundCategory,  ItemStack itemStack) {
         if (itemStack == null)
-            return sound;
+            return null;
 
         if (itemStack.getItem() == null)
-            return sound;
+            return null;
 
         if (!(itemStack.getItem() instanceof IItemSoundMuffler))
-            return sound;
+            return null;
 
         return ((IItemSoundMuffler) itemStack.getItem()).getMuffledSound(itemStack, name, sound, soundCategory);
     }
 
     public static ISound getMuffledSound(String name, ISound sound, SoundCategory soundCategory, ITileSoundMuffler tileSoundMuffler) {
         if (tileSoundMuffler == null)
-            return sound;
+            return null;
 
         if (Minecraft.getMinecraft().theWorld.provider.dimensionId != tileSoundMuffler.getDimension())
-            return sound;
+            return null;
 
-        double dx = sound.getXPosF() - tileSoundMuffler.getX();
-        double dy = sound.getYPosF() - tileSoundMuffler.getY();
-        double dz = sound.getZPosF() - tileSoundMuffler.getZ();
+        double dx = (tileSoundMuffler.getX() + 0.5) - sound.getXPosF();
+        double dy = (tileSoundMuffler.getY() + 0.5) - sound.getYPosF();
+        double dz = (tileSoundMuffler.getZ() + 0.5) - sound.getZPosF();
         double distance = dx * dx + dy * dy + dz * dz;
 
-        if (distance > tileSoundMuffler.getRange())
-            return sound;
+        if (distance > tileSoundMuffler.getRange() || distance < 0.0D)
+            return null;
 
         return tileSoundMuffler.getMuffledSound(name, sound, soundCategory);
     }

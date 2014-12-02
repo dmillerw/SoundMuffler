@@ -12,6 +12,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.sound.PlaySoundEvent17;
 
+import java.util.Random;
+
 /**
  * @author dmillerw
  */
@@ -26,6 +28,7 @@ public class SoundHandler {
         EntityPlayer player = Minecraft.getMinecraft().thePlayer;
 
         ISound sound = null;
+        ITileSoundMuffler tileSoundMuffler = null;
 
         // Worn items take priority, and any sound change done via an armor piece
         // will end the search/muffling action, instantly returning the modified sound
@@ -33,7 +36,7 @@ public class SoundHandler {
         for (ItemStack itemStack : player.inventory.armorInventory) {
             if (itemStack != null && itemStack.getItem() instanceof IItemSoundMuffler) {
                 ISound muffled = SoundHelper.getMuffledSound(event.name, event.sound, event.category, itemStack);
-                if (sound == null && muffled != null && muffled != event.sound) {
+                if (sound == null && muffled != null) {
                     sound = muffled;
                 }
             }
@@ -48,15 +51,33 @@ public class SoundHandler {
                 if (sound != null) {
                     if (sound.getPositionedSoundLocation().equals(muffled.getPositionedSoundLocation())) {
                         if (muffled.getVolume() < sound.getVolume())
+                            tileSoundMuffler = soundMuffler;
                             sound = muffled;
                     }
                 } else {
+                    tileSoundMuffler = soundMuffler;
                     sound = muffled;
                 }
             }
         }
 
-        if (sound != null)
+        if (sound != null) {
+            if (tileSoundMuffler != null) {
+                double dx = (tileSoundMuffler.getX() + 0.5) - sound.getXPosF();
+                double dy = (tileSoundMuffler.getY() + 0.5) - sound.getYPosF();
+                double dz = (tileSoundMuffler.getZ() + 0.5) - sound.getZPosF();
+                double distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+                if (distance != 0.0D) {
+                    distance = 1.0D / distance / 8.0D;
+                }
+
+                player.worldObj.spawnParticle("note", (double) sound.getXPosF() + 0.5D, (double) sound.getYPosF() + 1.2D, (double) sound.getZPosF() + 0.5D, dx * distance, dy * distance, dz * distance);
+            } else {
+                player.worldObj.spawnParticle("note", (double) sound.getXPosF() + 0.5D, (double) sound.getYPosF() + 1.2D, (double) sound.getZPosF() + 0.5D, (double) (new Random().nextInt(12)) / 24.0D, 0.0D, 0.0D);
+            }
+
             event.result = sound;
+        }
     }
 }
