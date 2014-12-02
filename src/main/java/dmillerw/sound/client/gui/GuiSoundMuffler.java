@@ -1,14 +1,14 @@
 package dmillerw.sound.client.gui;
 
+import dmillerw.sound.api.IItemSoundMuffler;
 import dmillerw.sound.api.ITileSoundMuffler;
 import dmillerw.sound.api.SoundEntry;
-import dmillerw.sound.core.network.packet.PacketItemSoundMuffler;
-import dmillerw.sound.core.network.packet.PacketTileSoundMuffler;
+import dmillerw.sound.core.network.PacketSoundMuffler;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
@@ -18,7 +18,7 @@ import java.util.List;
 /**
  * @author dmillerw
  */
-public class GuiTileSoundMuffler extends GuiScreen {
+public abstract class GuiSoundMuffler extends GuiScreen {
 
     private static final ResourceLocation GUI_BLANK = new ResourceLocation("soundmuffler++:textures/gui/blank.png");
 
@@ -48,16 +48,10 @@ public class GuiTileSoundMuffler extends GuiScreen {
     private GuiUVButton buttonDelete;
     private GuiUVButton buttonSearch;
 
-    private EntityPlayer entityPlayer;
+    private List<SoundEntry> soundEntryList;
 
-    private ITileSoundMuffler tileSoundMuffler;
-
-    private List<SoundEntry> soundEntrySet;
-
-    public GuiTileSoundMuffler(EntityPlayer entityPlayer, ITileSoundMuffler tileSoundMuffler) {
-        this.entityPlayer = entityPlayer;
-        this.tileSoundMuffler = tileSoundMuffler;
-        this.soundEntrySet = this.tileSoundMuffler.getSoundEntries();
+    public GuiSoundMuffler(List<SoundEntry> soundEntryList) {
+        this.soundEntryList = soundEntryList;
 
         Keyboard.enableRepeatEvents(true);
     }
@@ -110,7 +104,7 @@ public class GuiTileSoundMuffler extends GuiScreen {
         final int minX = guiLeft + LIST_X - 5;
         final int maxX = guiLeft + LIST_X_END + 5;
 
-        for (int i=0; i<Math.min(soundEntrySet.size(), MAX_LINE_COUNT); i++) {
+        for (int i=0; i<Math.min(soundEntryList.size(), MAX_LINE_COUNT); i++) {
             final int minY = guiTop + LIST_Y + (mc.fontRenderer.FONT_HEIGHT * i);
             final int maxY = minY + mc.fontRenderer.FONT_HEIGHT;
 
@@ -129,7 +123,7 @@ public class GuiTileSoundMuffler extends GuiScreen {
                 GL11.glPopMatrix();
             }
 
-            SoundEntry soundEntry = soundEntrySet.get(listOffset + i);
+            SoundEntry soundEntry = soundEntryList.get(listOffset + i);
             String volume = String.valueOf(soundEntry.volumeModifier) + "%";
             mc.fontRenderer.drawString(soundEntry.name, guiLeft + LIST_X, guiTop + LIST_Y + (mc.fontRenderer.FONT_HEIGHT * i), 0xFFFFFF);
 
@@ -169,8 +163,8 @@ public class GuiTileSoundMuffler extends GuiScreen {
             if (!sound.isEmpty() && !volume.isEmpty()) {
                 SoundEntry soundEntry = new SoundEntry(sound, Integer.parseInt(volume));
 
-                soundEntrySet.add(soundEntry);
-                PacketItemSoundMuffler.addSoundEntry(soundEntry);
+                soundEntryList.add(soundEntry);
+                addSoundEntry(soundEntry);
 
                 this.textFieldSound.setText("");
                 this.textFieldVolume.setText("");
@@ -202,12 +196,13 @@ public class GuiTileSoundMuffler extends GuiScreen {
         final int minX = guiLeft + LIST_X;
         final int maxX = guiLeft + LIST_X_END;
 
-        for (int i=0; i<Math.min(soundEntrySet.size(), MAX_LINE_COUNT); i++) {
+        for (int i=0; i<Math.min(soundEntryList.size(), MAX_LINE_COUNT); i++) {
             final int minY = guiTop + LIST_Y + (mc.fontRenderer.FONT_HEIGHT * i);
             final int maxY = minY + mc.fontRenderer.FONT_HEIGHT;
 
             if (mouseX >= minX && mouseX <= maxX && mouseY >= minY && mouseY <= maxY) {
                 selectedIndex = listOffset + i;
+                buttonDelete.enabled = true;
                 return;
             }
         }
@@ -219,17 +214,18 @@ public class GuiTileSoundMuffler extends GuiScreen {
             listOffset -= 1;
             if (listOffset < 0) listOffset = 0;
         } else if (guiButton.id == 1) {
-            final int max = Math.max(0, soundEntrySet.size() - MAX_LINE_COUNT);
+            final int max = Math.max(0, soundEntryList.size() - MAX_LINE_COUNT);
             listOffset += 1;
             if (listOffset > max) listOffset = max;
         } else if (guiButton.id == 2) {
             if (selectedIndex != -1) {
-                SoundEntry soundEntry = soundEntrySet.get(selectedIndex);
-                soundEntrySet.remove(soundEntry);
+                SoundEntry soundEntry = soundEntryList.get(selectedIndex);
+                soundEntryList.remove(soundEntry);
 
-                PacketTileSoundMuffler.removeSoundEntry(tileSoundMuffler, soundEntry);
+                removeSoundEntry(soundEntry);
 
                 selectedIndex = -1;
+                buttonDelete.enabled = false;
             }
         }
     }
@@ -237,5 +233,50 @@ public class GuiTileSoundMuffler extends GuiScreen {
     @Override
     public boolean doesGuiPauseGame() {
         return false;
+    }
+
+    public abstract void addSoundEntry(SoundEntry soundEntry);
+    public abstract void removeSoundEntry(SoundEntry soundEntry);
+
+    public static class Tile extends GuiSoundMuffler {
+
+        public ITileSoundMuffler tileSoundMuffler;
+
+        public Tile(ITileSoundMuffler tileSoundMuffler) {
+            super(tileSoundMuffler.getSoundEntries());
+
+            this.tileSoundMuffler = tileSoundMuffler;
+        }
+
+        @Override
+        public void addSoundEntry(SoundEntry soundEntry) {
+            PacketSoundMuffler.sendPacket(tileSoundMuffler, soundEntry, PacketSoundMuffler.Type.ADD);
+        }
+
+        @Override
+        public void removeSoundEntry(SoundEntry soundEntry) {
+            PacketSoundMuffler.sendPacket(tileSoundMuffler, soundEntry, PacketSoundMuffler.Type.REMOVE);
+        }
+    }
+
+    public static class Item extends GuiSoundMuffler {
+
+        public ItemStack itemStack;
+
+        public Item(ItemStack itemStack) {
+            super(((IItemSoundMuffler)itemStack.getItem()).getSoundEntries(itemStack));
+
+            this.itemStack = itemStack;
+        }
+
+        @Override
+        public void addSoundEntry(SoundEntry soundEntry) {
+            PacketSoundMuffler.sendPacket(soundEntry, PacketSoundMuffler.Type.ADD);
+        }
+
+        @Override
+        public void removeSoundEntry(SoundEntry soundEntry) {
+            PacketSoundMuffler.sendPacket(soundEntry, PacketSoundMuffler.Type.REMOVE);
+        }
     }
 }

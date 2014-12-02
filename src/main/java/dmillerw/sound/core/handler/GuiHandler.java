@@ -2,7 +2,7 @@ package dmillerw.sound.core.handler;
 
 import cpw.mods.fml.common.network.IGuiHandler;
 import dmillerw.sound.api.ITileSoundMuffler;
-import dmillerw.sound.client.gui.GuiTileSoundMuffler;
+import dmillerw.sound.client.gui.GuiSoundMuffler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
@@ -21,10 +21,10 @@ public class GuiHandler implements IGuiHandler {
     @Override
     public Object getClientGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {
         if (id == GUI_CONFIGURE) {
-//            if (y <= 0)
-//                return new GuiItemSoundMuffler(player);
-//            else
-                return new GuiTileSoundMuffler(player, (ITileSoundMuffler) world.getTileEntity(x, y, z));
+            if (y <= 0)
+                return new GuiSoundMuffler.Item(player.getHeldItem());
+            else
+                return new GuiSoundMuffler.Tile((ITileSoundMuffler) world.getTileEntity(x, y, z));
 
         }
 

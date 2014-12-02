@@ -13,6 +13,7 @@ import dmillerw.sound.core.item.ItemMagicalEarmuffs;
 import dmillerw.sound.core.network.PacketHandler;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
@@ -47,6 +48,16 @@ public class CommonProxy {
                 'S', "stickWood",
                 'W', new ItemStack(Blocks.wool, 1, OreDictionary.WILDCARD_VALUE),
                 'N', Blocks.noteblock
+        ));
+
+        GameRegistry.addRecipe(new ShapedOreRecipe(
+                new ItemStack(soundMuffler),
+                "WWW",
+                "WNW",
+                "WRW",
+                'W', Blocks.wool,
+                'N', Blocks.noteblock,
+                'R', Items.redstone
         ));
     }
 
