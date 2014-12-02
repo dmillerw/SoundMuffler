@@ -9,6 +9,8 @@ import dmillerw.sound.api.SoundEntry;
 import dmillerw.sound.core.handler.InternalHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
+import net.minecraft.client.audio.SoundCategory;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.sound.PlaySoundEvent17;
 
@@ -19,7 +21,7 @@ import net.minecraftforge.client.event.sound.PlaySoundEvent17;
 public class SoundHandler {
 
     @SideOnly(Side.CLIENT)
-    public static ISound getMuffledSound(String name, ISound sound, ItemStack itemStack) {
+    public static ISound getMuffledSound(String name, ISound sound, SoundCategory soundCategory,  ItemStack itemStack) {
         if (itemStack == null)
             return sound;
 
@@ -29,11 +31,11 @@ public class SoundHandler {
         if (!(itemStack.getItem() instanceof IItemSoundMuffler))
             return sound;
 
-        return ((IItemSoundMuffler) itemStack.getItem()).getMuffledSound(itemStack, name, sound);
+        return ((IItemSoundMuffler) itemStack.getItem()).getMuffledSound(itemStack, name, sound, soundCategory);
     }
 
     @SideOnly(Side.CLIENT)
-    public static ISound getMuffledSound(String name, ISound sound, ITileSoundMuffler tileSoundMuffler) {
+    public static ISound getMuffledSound(String name, ISound sound, SoundCategory soundCategory, ITileSoundMuffler tileSoundMuffler) {
         if (tileSoundMuffler == null)
             return sound;
 
@@ -48,7 +50,7 @@ public class SoundHandler {
         if (distance > tileSoundMuffler.getRange())
             return sound;
 
-        return tileSoundMuffler.getMuffledSound(name, sound);
+        return tileSoundMuffler.getMuffledSound(name, sound, soundCategory);
     }
 
     public static boolean soundMatches(String sound, SoundEntry soundEntry) {
@@ -70,24 +72,47 @@ public class SoundHandler {
         return false;
     }
 
+    public static ISound getRandomSound(ISound oldSound, SoundCategory soundCategory) {
+        return new SoundReplaced(oldSound, Minecraft.getMinecraft().getSoundHandler().getRandomSoundFromCategories(soundCategory).getSoundEventLocation());
+    }
+
     @SubscribeEvent
     public void soundPlay(PlaySoundEvent17 event) {
         if (Minecraft.getMinecraft().thePlayer == null)
             return;
 
-        ItemStack itemStack = Minecraft.getMinecraft().thePlayer.getCurrentArmor(3);
+        EntityPlayer player = Minecraft.getMinecraft().thePlayer;
 
-        // First, check to see if they have a sound muffling item
-        if (itemStack != null && itemStack.getItem() instanceof IItemSoundMuffler)
-            event.result = getMuffledSound(event.name, event.sound, itemStack);
+        ISound sound = null;
 
-        // Then, go through all registered sound mufflers
-        for (ITileSoundMuffler soundMuffler : InternalHandler.soundMufflerList) {
-            ISound muffled = getMuffledSound(event.name, event.sound, soundMuffler);
-
-            // Use the tiles sound only if its quieter
-            if (muffled instanceof SoundMuffled && muffled.getVolume() < event.result.getVolume())
-                event.result = muffled;
+        // Worn items take priority, and any sound change done via an armor piece
+        // will end the search/muffling action, instantly returning the modified sound
+        // EXCEPT if a block muffles that sound further
+        for (ItemStack itemStack : player.inventory.armorInventory) {
+            if (itemStack != null && itemStack.getItem() instanceof IItemSoundMuffler) {
+                ISound muffled = getMuffledSound(event.name, event.sound, event.category, itemStack);
+                if (sound == null && muffled != null && muffled != event.sound) {
+                    sound = muffled;
+                }
+            }
         }
+
+        // Blocks fire next, and will handle anything the armor didn't
+        for (ITileSoundMuffler soundMuffler : InternalHandler.soundMufflerList) {
+            ISound muffled = getMuffledSound(event.name, event.sound, event.category, soundMuffler);
+
+            // Use the tiles sound only if its quieter, or an armor piece hasn' already changed it
+            if (muffled != null) {
+                if (sound == null && muffled != event.sound) {
+                    sound = muffled;
+                    break;
+                } else if (muffled.getPositionedSoundLocation() == sound.getPositionedSoundLocation()) {
+                    if (muffled.getVolume() < sound.getVolume())
+                        sound = muffled;
+                }
+            }
+        }
+
+        event.result = sound;
     }
 }

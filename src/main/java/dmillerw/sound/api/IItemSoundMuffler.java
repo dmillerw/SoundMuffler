@@ -3,6 +3,7 @@ package dmillerw.sound.api;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.audio.ISound;
+import net.minecraft.client.audio.SoundCategory;
 import net.minecraft.item.ItemStack;
 
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
 public interface IItemSoundMuffler {
 
     @SideOnly(Side.CLIENT)
-    public ISound getMuffledSound(ItemStack itemStack, String name, ISound sound);
+    public ISound getMuffledSound(ItemStack itemStack, String name, ISound sound, SoundCategory soundCategory);
 
     public List<SoundEntry> getSoundEntries(ItemStack itemStack);
 

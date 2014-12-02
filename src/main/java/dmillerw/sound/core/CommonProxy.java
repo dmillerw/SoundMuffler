@@ -9,6 +9,8 @@ import dmillerw.sound.SoundMuffler;
 import dmillerw.sound.core.block.BlockSoundMuffler;
 import dmillerw.sound.core.block.TileSoundMuffler;
 import dmillerw.sound.core.handler.GuiHandler;
+import dmillerw.sound.core.handler.PlayerHandler;
+import dmillerw.sound.core.item.ItemBrokenEarmuffs;
 import dmillerw.sound.core.item.ItemMagicalEarmuffs;
 import dmillerw.sound.core.network.PacketHandler;
 import net.minecraft.block.Block;
@@ -16,6 +18,7 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 
@@ -27,14 +30,20 @@ public class CommonProxy {
     public static Block soundMuffler;
 
     public static Item magicalEarmuffs;
+    public static Item brokenEarmuffs;
 
     public void preInit(FMLPreInitializationEvent event) {
         PacketHandler.initialize();
 
         NetworkRegistry.INSTANCE.registerGuiHandler(SoundMuffler.instance, new GuiHandler());
 
+        MinecraftForge.EVENT_BUS.register(new PlayerHandler());
+
         magicalEarmuffs = new ItemMagicalEarmuffs();
         GameRegistry.registerItem(magicalEarmuffs, "magicalEarmuffs");
+
+        brokenEarmuffs = new ItemBrokenEarmuffs();
+        GameRegistry.registerItem(brokenEarmuffs, "brokenEarmuffs");
 
         soundMuffler = new BlockSoundMuffler();
         GameRegistry.registerBlock(soundMuffler, "soundMuffler");

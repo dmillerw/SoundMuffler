@@ -7,6 +7,7 @@ import dmillerw.sound.api.SoundEntry;
 import dmillerw.sound.client.sound.SoundHandler;
 import dmillerw.sound.client.sound.SoundMuffled;
 import net.minecraft.client.audio.ISound;
+import net.minecraft.client.audio.SoundCategory;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
@@ -133,7 +134,7 @@ public class TileSoundMuffler extends TileEntity implements ITileSoundMuffler {
     }
 
     @Override
-    public ISound getMuffledSound(String name, ISound sound) {
+    public ISound getMuffledSound(String name, ISound sound, SoundCategory soundCategory) {
         for (SoundEntry soundEntry : soundEntryList) {
             if (SoundHandler.soundMatches(name, soundEntry))
                 return new SoundMuffled(sound, soundEntry.volumeModifier);

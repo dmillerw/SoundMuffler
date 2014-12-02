@@ -7,6 +7,7 @@ import dmillerw.sound.client.sound.SoundHandler;
 import dmillerw.sound.client.sound.SoundMuffled;
 import dmillerw.sound.core.handler.InternalHandler;
 import net.minecraft.client.audio.ISound;
+import net.minecraft.client.audio.SoundCategory;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -48,7 +49,7 @@ public class ItemMagicalEarmuffs extends Item implements IItemSoundMuffler {
 
     /* IMAGICALEARMUFFS */
     @Override
-    public ISound getMuffledSound(ItemStack itemStack, String name, ISound sound) {
+    public ISound getMuffledSound(ItemStack itemStack, String name, ISound sound, SoundCategory soundCategory) {
         if (!itemStack.hasTagCompound())
             return sound;
 
