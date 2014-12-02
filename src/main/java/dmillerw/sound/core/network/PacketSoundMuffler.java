@@ -120,13 +120,13 @@ public abstract class PacketSoundMuffler<T extends IMessage> implements IMessage
         public void handleMessage(Item message, MessageContext ctx) {
             ItemStack held = ctx.getServerHandler().playerEntity.getHeldItem();
             if (held != null && held.getItem() instanceof IItemSoundMuffler) {
-                if (type == Type.ADD)
+                if (message.type == Type.ADD)
                     ((IItemSoundMuffler) held.getItem()).addSoundEntry(held, message.soundEntry);
-                else if (type == Type.REMOVE)
+                else if (message.type == Type.REMOVE)
                     ((IItemSoundMuffler) held.getItem()).removeSoundEntry(held, message.soundEntry);
-            }
 
-            ctx.getServerHandler().playerEntity.updateHeldItem();
+                ctx.getServerHandler().playerEntity.updateHeldItem();
+            }
         }
     }
 

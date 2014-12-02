@@ -1,13 +1,18 @@
 package dmillerw.sound.client.gui;
 
+import dmillerw.sound.SoundMuffler;
 import dmillerw.sound.api.IItemSoundMuffler;
 import dmillerw.sound.api.ITileSoundMuffler;
 import dmillerw.sound.api.SoundEntry;
+import dmillerw.sound.core.handler.GuiHandler;
+import dmillerw.sound.core.handler.InternalHandler;
 import dmillerw.sound.core.network.PacketSoundMuffler;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Keyboard;
@@ -33,6 +38,20 @@ public abstract class GuiSoundMuffler extends GuiScreen {
     private static final int MAX_LINE_COUNT = 14;
 
     protected static String textFieldOverride;
+
+    private static int lastX;
+    private static int lastY;
+    private static int lastZ;
+
+    public static void cacheLastCoordinates(int x, int y, int z) {
+        lastX = x;
+        lastY = y;
+        lastZ = z;
+    }
+
+    public static void reopen() {
+        InternalHandler.openConfigurationGUI(Minecraft.getMinecraft().thePlayer, lastX, lastY, lastZ);
+    }
 
     private int guiLeft;
     private int guiTop;
@@ -182,6 +201,10 @@ public abstract class GuiSoundMuffler extends GuiScreen {
                     return;
 
                 this.textFieldVolume.textboxKeyTyped(key, keycode);
+
+                currentVolume = this.textFieldVolume.getText();
+                if (currentVolume != null && Integer.parseInt(currentVolume) > 100)
+                    this.textFieldVolume.setText("100");
             }
         }
     }
@@ -227,6 +250,9 @@ public abstract class GuiSoundMuffler extends GuiScreen {
                 selectedIndex = -1;
                 buttonDelete.enabled = false;
             }
+        } else if (guiButton.id == 3) {
+            EntityPlayer entityPlayer = Minecraft.getMinecraft().thePlayer;
+            entityPlayer.openGui(SoundMuffler.instance, GuiHandler.GUI_SEARCH, entityPlayer.worldObj, 0, 0, 0);
         }
     }
 

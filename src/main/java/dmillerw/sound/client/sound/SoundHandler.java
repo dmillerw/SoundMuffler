@@ -55,6 +55,7 @@ public class SoundHandler {
             }
         }
 
-        event.result = sound;
+        if (sound != null)
+            event.result = sound;
     }
 }

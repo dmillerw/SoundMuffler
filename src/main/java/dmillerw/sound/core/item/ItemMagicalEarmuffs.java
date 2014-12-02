@@ -122,8 +122,6 @@ public class ItemMagicalEarmuffs extends Item implements IItemSoundMuffler {
         NBTTagList nbtTagList = nbtTagCompound.getTagList("entries", Constants.NBT.TAG_COMPOUND);
         NBTTagList newNBTTagList = new NBTTagList();
 
-
-
         boolean removed = false;
         for (int i=0; i<nbtTagList.tagCount(); i++) {
             SoundEntry listEntry = SoundEntry.readFromNBT(nbtTagList.getCompoundTagAt(i));
