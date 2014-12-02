@@ -5,6 +5,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * @author dmillerw
@@ -50,23 +51,26 @@ public class SoundEntry {
     }
 
     public boolean nameMatches(String name) {
-        name = name.replace(".", "/");
-        String entryName = this.name.replace(".", "/");
-        String[] soundSplit = name.split("/");
-        String[] soundEntrySplit = entryName.split("/");
+        String[] soundSplit = name.replace(".", "/").split("/");
+        String[] soundEntrySplit = this.name.replace(".", "/").split("/");
+        boolean[] matchingArray = new boolean[soundEntrySplit.length];
 
-        if (soundSplit.length != soundEntrySplit.length)
-            return false;
+        for (int i=0; i<soundEntrySplit.length; i++) {
+            if (i >= soundSplit.length)
+                break;
 
-        for (int i=0; i<soundSplit.length; i++) {
             String one = soundSplit[i];
             String two = soundEntrySplit[i];
 
-            if (one.equals(two) || (one.equals("*") || two.equals("*")))
-                return true;
+            if (one.equals(two) || (one.equals("*") || two.equals("*"))) {
+                matchingArray[i] = true;
+            }
         }
 
-        return false;
+        for (boolean bool : matchingArray) {
+            if (!bool) return false;
+        }
+        return true;
     }
 
     @Override

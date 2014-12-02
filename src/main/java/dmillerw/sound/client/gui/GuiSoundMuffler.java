@@ -203,7 +203,7 @@ public abstract class GuiSoundMuffler extends GuiScreen {
                 this.textFieldVolume.textboxKeyTyped(key, keycode);
 
                 currentVolume = this.textFieldVolume.getText();
-                if (currentVolume != null && Integer.parseInt(currentVolume) > 100)
+                if (currentVolume != null && !currentVolume.isEmpty() && Integer.parseInt(currentVolume) > 100)
                     this.textFieldVolume.setText("100");
             }
         }

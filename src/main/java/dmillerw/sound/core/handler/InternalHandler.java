@@ -1,7 +1,6 @@
 package dmillerw.sound.core.handler;
 
 import com.google.common.collect.Lists;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import dmillerw.sound.SoundMuffler;
 import dmillerw.sound.api.EventSoundMufflerTile;
@@ -24,12 +23,10 @@ public class InternalHandler {
     @SubscribeEvent
     public void registerTile(EventSoundMufflerTile.Register event) {
         soundMufflerList.add(event.tileSoundMuffler);
-        System.out.println(FMLCommonHandler.instance().getEffectiveSide());
     }
 
     @SubscribeEvent
     public void unregisterTile(EventSoundMufflerTile.Unregister event) {
         soundMufflerList.remove(event.tileSoundMuffler);
-        System.out.println(FMLCommonHandler.instance().getEffectiveSide());
     }
 }

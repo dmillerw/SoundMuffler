@@ -43,14 +43,15 @@ public class SoundHandler {
         for (ITileSoundMuffler soundMuffler : InternalHandler.soundMufflerList) {
             ISound muffled = SoundHelper.getMuffledSound(event.name, event.sound, event.category, soundMuffler);
 
-            // Use the tiles sound only if its quieter, or an armor piece hasn' already changed it
+            // Use the tiles sound only if its quieter, or an armor piece hasn't already changed it
             if (muffled != null) {
-                if (sound == null && muffled != event.sound) {
+                if (sound != null) {
+                    if (sound.getPositionedSoundLocation().equals(muffled.getPositionedSoundLocation())) {
+                        if (muffled.getVolume() < sound.getVolume())
+                            sound = muffled;
+                    }
+                } else {
                     sound = muffled;
-                    break;
-                } else if (muffled.getPositionedSoundLocation() == sound.getPositionedSoundLocation()) {
-                    if (muffled.getVolume() < sound.getVolume())
-                        sound = muffled;
                 }
             }
         }

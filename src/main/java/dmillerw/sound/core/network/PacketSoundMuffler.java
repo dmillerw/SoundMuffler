@@ -3,7 +3,6 @@ package dmillerw.sound.core.network;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
-import cpw.mods.fml.server.FMLServerHandler;
 import dmillerw.sound.api.IItemSoundMuffler;
 import dmillerw.sound.api.ITileSoundMuffler;
 import dmillerw.sound.api.SoundEntry;
@@ -28,7 +27,6 @@ public abstract class PacketSoundMuffler<T extends IMessage> implements IMessage
         packet.xCoord = tileSoundMuffler.getX();
         packet.yCoord = tileSoundMuffler.getY();
         packet.zCoord = tileSoundMuffler.getZ();
-        packet.dimension = tileSoundMuffler.getDimension();
         packet.soundEntry = soundEntry;
         packet.type = type;
         packet.sendToServer();
@@ -70,14 +68,12 @@ public abstract class PacketSoundMuffler<T extends IMessage> implements IMessage
         public int xCoord;
         public int yCoord;
         public int zCoord;
-        public int dimension;
 
         @Override
         public void writeData(ByteBuf buf) {
             buf.writeInt(xCoord);
             buf.writeInt(yCoord);
             buf.writeInt(zCoord);
-            buf.writeInt(dimension);
         }
 
         @Override
@@ -85,12 +81,11 @@ public abstract class PacketSoundMuffler<T extends IMessage> implements IMessage
             xCoord = buf.readInt();
             yCoord = buf.readInt();
             zCoord = buf.readInt();
-            dimension = buf.readInt();
         }
 
         @Override
         public void handleMessage(Tile message, MessageContext ctx) {
-            World world = FMLServerHandler.instance().getServer().worldServerForDimension(message.dimension);
+            World world = ctx.getServerHandler().playerEntity.worldObj;
             ITileSoundMuffler tileSoundMuffler = (ITileSoundMuffler) world.getTileEntity(message.xCoord, message.yCoord, message.zCoord);
 
             if (tileSoundMuffler != null) {
