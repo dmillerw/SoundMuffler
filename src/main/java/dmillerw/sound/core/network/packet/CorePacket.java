@@ -1,7 +1,8 @@
-package dmillerw.sound.core.network;
+package dmillerw.sound.core.network.packet;
 
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
+import dmillerw.sound.core.network.PacketHandler;
 
 /**
  * @author dmillerw

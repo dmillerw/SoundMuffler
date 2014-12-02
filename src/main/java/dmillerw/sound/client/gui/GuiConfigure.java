@@ -2,8 +2,7 @@ package dmillerw.sound.client.gui;
 
 import dmillerw.sound.api.IMagicalEarmuffs;
 import dmillerw.sound.api.SoundEntry;
-import dmillerw.sound.core.network.packet.PacketAddSoundEntry;
-import dmillerw.sound.core.network.packet.PacketRemoveSoundEntry;
+import dmillerw.sound.core.network.packet.PacketSoundEntry;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
@@ -170,14 +169,13 @@ public class GuiConfigure extends GuiScreen {
             String volume = this.textFieldVolume.getText();
 
             if (!sound.isEmpty() && !volume.isEmpty()) {
-                PacketAddSoundEntry packet = new PacketAddSoundEntry();
-                packet.soundEntry = new SoundEntry(sound, Integer.parseInt(volume));
-                packet.sendToServer();
+                SoundEntry soundEntry = new SoundEntry(sound, Integer.parseInt(volume));
+
+                soundEntrySet.add(soundEntry);
+                PacketSoundEntry.addSoundEntry(soundEntry);
 
                 this.textFieldSound.setText("");
                 this.textFieldVolume.setText("");
-
-                soundEntrySet.add(packet.soundEntry);
 
                 return;
             }
@@ -230,9 +228,8 @@ public class GuiConfigure extends GuiScreen {
             if (selectedIndex != -1) {
                 SoundEntry soundEntry = soundEntrySet.get(selectedIndex);
                 soundEntrySet.remove(soundEntry);
-                PacketRemoveSoundEntry packet = new PacketRemoveSoundEntry();
-                packet.soundEntry = soundEntry;
-                packet.sendToServer();
+
+                PacketSoundEntry.removeSoundEntry(soundEntry);
 
                 selectedIndex = -1;
             }
