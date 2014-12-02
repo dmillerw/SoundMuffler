@@ -4,6 +4,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import dmillerw.sound.api.IMagicalEarmuffs;
+import dmillerw.sound.api.SoundEntry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
 import net.minecraft.item.ItemStack;
@@ -29,9 +30,31 @@ public class SoundHandler {
         return ((IMagicalEarmuffs) itemStack.getItem()).getMuffledSound(itemStack, name, sound);
     }
 
+    public static boolean soundMatches(String sound, SoundEntry soundEntry) {
+        sound = sound.replace(".", "/");
+        String entry = soundEntry.name.replace(".", "/");
+        String[] soundSplit = sound.split("/");
+        String[] soundEntrySplit = entry.split("/");
+        if (soundSplit.length != soundEntrySplit.length)
+            return false;
+
+        for (int i=0; i<soundSplit.length; i++) {
+            String one = soundSplit[i];
+            String two = soundEntrySplit[i];
+
+            if (one.equals(two) || (one.equals("*") || two.equals("*")))
+                return true;
+        }
+
+        return false;
+    }
+
     @SubscribeEvent
     public void soundPlay(PlaySoundEvent17 event) {
-        ItemStack itemStack = Minecraft.getMinecraft().thePlayer.getCurrentArmor(0);
+        if (Minecraft.getMinecraft().thePlayer == null)
+            return;
+
+        ItemStack itemStack = Minecraft.getMinecraft().thePlayer.getCurrentArmor(3);
         if (itemStack == null)
             return;
 

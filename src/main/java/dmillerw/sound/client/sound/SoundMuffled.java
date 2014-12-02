@@ -10,9 +10,9 @@ public class SoundMuffled implements ISound {
 
     private ISound sound;
 
-    private float volumeModifier;
+    private int volumeModifier;
 
-    public SoundMuffled(ISound sound, float volumeModifier) {
+    public SoundMuffled(ISound sound, int volumeModifier) {
         this.sound = sound;
         this.volumeModifier = volumeModifier;
     }
@@ -34,7 +34,7 @@ public class SoundMuffled implements ISound {
 
     @Override
     public float getVolume() {
-        return sound.getVolume() * volumeModifier;
+        return sound.getVolume() * (float)volumeModifier / (float)100;
     }
 
     @Override

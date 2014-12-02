@@ -1,21 +1,36 @@
 package dmillerw.sound.api;
 
+import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.PacketBuffer;
+
+import java.io.IOException;
 
 /**
  * @author dmillerw
  */
 public class SoundEntry {
 
+    public static SoundEntry fromBytes(ByteBuf buf) {
+        PacketBuffer packetBuffer = new PacketBuffer(buf);
+        int length = packetBuffer.readInt();
+        String entry = "";
+        try {
+            entry = packetBuffer.readStringFromBuffer(length);
+        } catch (IOException ex) {}
+        int volumeModifier = packetBuffer.readInt();
+        return new SoundEntry(entry, volumeModifier);
+    }
+
     public static SoundEntry readFromNBT(NBTTagCompound nbtTagCompound) {
-        return new SoundEntry(nbtTagCompound.getString("name"), nbtTagCompound.getFloat("volumeModifier"));
+        return new SoundEntry(nbtTagCompound.getString("name"), nbtTagCompound.getInteger("volumeModifier"));
     }
 
     public String name;
 
-    public float volumeModifier;
+    public int volumeModifier;
 
-    public SoundEntry(String name, float volumeModifier) {
+    public SoundEntry(String name, int volumeModifier) {
         this.name = name;
         this.volumeModifier = volumeModifier;
     }
@@ -25,6 +40,15 @@ public class SoundEntry {
         nbtTagCompound.setFloat("volumeModifier", volumeModifier);
     }
 
+    public void toBytes(ByteBuf buf) {
+        PacketBuffer packetBuffer = new PacketBuffer(buf);
+        try {
+            packetBuffer.writeInt(name.length());
+            packetBuffer.writeStringToBuffer(name);
+        } catch (IOException ex) {}
+        packetBuffer.writeInt(volumeModifier);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -32,13 +56,9 @@ public class SoundEntry {
 
         SoundEntry that = (SoundEntry) o;
 
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        if (Integer.compare(that.volumeModifier, volumeModifier) != 0) return false;
+        if (!name.equals(that.name)) return false;
 
         return true;
-    }
-
-    @Override
-    public int hashCode() {
-        return name != null ? name.hashCode() : 0;
     }
 }
