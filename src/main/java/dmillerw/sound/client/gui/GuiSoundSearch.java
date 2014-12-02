@@ -11,6 +11,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import org.apache.commons.lang3.ArrayUtils;
 import org.lwjgl.input.Keyboard;
@@ -116,7 +117,10 @@ public class GuiSoundSearch extends GuiScreen {
             }
 
             SoundEntryString soundEntryString = listContents.get(listOffset + i);
-            mc.fontRenderer.drawString(soundEntryString.string, guiLeft + LIST_X, guiTop + LIST_Y + (mc.fontRenderer.FONT_HEIGHT * i), soundEntryString.end ? 0xFF0000 : 0xFFFFFF);
+            String string = soundEntryString.string;
+            if (soundEntryString.end)
+                string = EnumChatFormatting.UNDERLINE + string + EnumChatFormatting.RESET;
+            mc.fontRenderer.drawString(string, guiLeft + LIST_X, guiTop + LIST_Y + (mc.fontRenderer.FONT_HEIGHT * i), soundEntryString.end ? 0xFF0000 : 0xFFFFFF);
         }
 
         this.searchField.drawTextBox();
