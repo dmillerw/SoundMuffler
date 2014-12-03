@@ -102,6 +102,10 @@ public class SoundHelper {
     }
 
     public static ISound getRandomSound(ISound oldSound, SoundCategory soundCategory) {
-        return new SoundReplaced(oldSound, Minecraft.getMinecraft().getSoundHandler().getRandomSoundFromCategories(soundCategory).getSoundEventLocation());
+        SoundEventAccessorComposite random = Minecraft.getMinecraft().getSoundHandler().getRandomSoundFromCategories(soundCategory);
+        if (random != null)
+            return new SoundReplaced(oldSound, random.getSoundEventLocation());
+        else
+            return oldSound;
     }
 }
