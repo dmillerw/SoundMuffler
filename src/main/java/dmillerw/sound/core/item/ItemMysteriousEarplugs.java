@@ -1,5 +1,7 @@
 package dmillerw.sound.core.item;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import dmillerw.sound.client.sound.SoundHelper;
 import dmillerw.sound.client.sound.SoundReplaced;
 import net.minecraft.client.audio.ISound;
@@ -33,6 +35,7 @@ public class ItemMysteriousEarplugs extends ItemMagicalEarplugs {
         return true;
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public ISound getMuffledSound(ItemStack itemStack, String name, ISound sound, SoundCategory soundCategory) {
         // Fire a random sound every other sound

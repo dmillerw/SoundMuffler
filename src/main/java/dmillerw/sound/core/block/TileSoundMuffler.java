@@ -1,6 +1,8 @@
 package dmillerw.sound.core.block;
 
 import com.google.common.collect.Lists;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import dmillerw.sound.api.EventSoundMufflerTile;
 import dmillerw.sound.api.ITileSoundMuffler;
 import dmillerw.sound.api.SoundEntry;
@@ -131,6 +133,7 @@ public class TileSoundMuffler extends TileEntity implements ITileSoundMuffler {
         return zCoord;
     }
 
+    @SideOnly(Side.CLIENT)
     @Override
     public ISound getMuffledSound(String name, ISound sound, SoundCategory soundCategory) {
         for (SoundEntry soundEntry : soundEntryList) {

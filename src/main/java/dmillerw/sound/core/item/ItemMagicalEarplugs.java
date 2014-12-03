@@ -1,6 +1,8 @@
 package dmillerw.sound.core.item;
 
 import com.google.common.collect.Lists;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import dmillerw.sound.api.IItemSoundMuffler;
 import dmillerw.sound.api.SoundEntry;
 import dmillerw.sound.client.sound.SoundMuffled;
@@ -56,6 +58,7 @@ public class ItemMagicalEarplugs extends Item implements IItemSoundMuffler {
     }
 
     /* IMAGICALEARMUFFS */
+    @SideOnly(Side.CLIENT)
     @Override
     public ISound getMuffledSound(ItemStack itemStack, String name, ISound sound, SoundCategory soundCategory) {
         if (!itemStack.hasTagCompound())
