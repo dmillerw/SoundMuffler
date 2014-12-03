@@ -1,6 +1,8 @@
 package dmillerw.sound.client.sound;
 
 import baubles.api.BaublesApi;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.relauncher.Side;
@@ -15,6 +17,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.event.sound.PlaySoundEvent17;
 
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -23,10 +26,22 @@ import java.util.Random;
 @SideOnly(Side.CLIENT)
 public class SoundHandler {
 
+    private static final int MAX = 15;
+
+    public static List<String> soundHistory = Lists.newArrayList();
+
     @SubscribeEvent
     public void soundPlay(PlaySoundEvent17 event) {
         if (Minecraft.getMinecraft().thePlayer == null)
             return;
+
+        if (soundHistory != null) {
+            if (soundHistory.size() > MAX)
+                soundHistory.remove(Iterables.get(soundHistory, 0));
+
+            if (!soundHistory.contains(event.name))
+                soundHistory.add(event.name);
+        }
 
         EntityPlayer player = Minecraft.getMinecraft().thePlayer;
 

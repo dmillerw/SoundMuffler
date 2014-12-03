@@ -27,7 +27,7 @@ import java.util.List;
  */
 public abstract class GuiSoundMuffler extends GuiScreen {
 
-    private static final ResourceLocation GUI_BLANK = new ResourceLocation("soundmuffler++:textures/gui/blank.png");
+    private static final ResourceLocation GUI_BLANK = new ResourceLocation("soundmuffler++:textures/gui/configure.png");
 
     private static final int X_SIZE = 176;
     private static final int Y_SIZE = 166;
@@ -44,17 +44,23 @@ public abstract class GuiSoundMuffler extends GuiScreen {
     private static int lastX;
     private static int lastY;
     private static int lastZ;
+
     private int guiLeft;
     private int guiTop;
     private int listOffset = 0;
     private int selectedIndex = -1;
+
     private GuiTextField textFieldSound;
     private GuiTextField textFieldVolume;
+
     private GuiUVButton buttonUp;
     private GuiUVButton buttonDown;
     private GuiUVButton buttonDelete;
     private GuiUVButton buttonSearch;
+    private GuiUVButton buttonHistory;
+
     private List<SoundEntry> soundEntryList;
+
     public GuiSoundMuffler(List<SoundEntry> soundEntryList) {
         this.soundEntryList = soundEntryList;
 
@@ -110,6 +116,7 @@ public abstract class GuiSoundMuffler extends GuiScreen {
         this.buttonList.add(buttonDown = new GuiUVButton(1, 153, 46, 176, 28, 14, 14, GUI_BLANK).setTooltip(StatCollector.translateToLocal("tooltip.scrollDown")));
         this.buttonList.add(buttonDelete = new GuiUVButton(2, 153, 143, 176, 0, 14, 14, GUI_BLANK).setTooltip(StatCollector.translateToLocal("tooltip.remove")));
         this.buttonList.add(buttonSearch = new GuiUVButton(3, 7, 7, 176, 41, 14, 14, GUI_BLANK).setTooltip(StatCollector.translateToLocal("tooltip.search")));
+        this.buttonList.add(buttonHistory = new GuiUVButton(4, 153, 66, 176, 56, 14, 14, GUI_BLANK).setTooltip(StatCollector.translateToLocal("tooltip.history")));
     }
 
     @Override
@@ -272,6 +279,9 @@ public abstract class GuiSoundMuffler extends GuiScreen {
         } else if (guiButton.id == 3) {
             EntityPlayer entityPlayer = Minecraft.getMinecraft().thePlayer;
             entityPlayer.openGui(SoundMuffler.instance, GuiHandler.GUI_SEARCH, entityPlayer.worldObj, 0, 0, 0);
+        } else if (guiButton.id == 4) {
+            EntityPlayer entityPlayer = Minecraft.getMinecraft().thePlayer;
+            entityPlayer.openGui(SoundMuffler.instance, GuiHandler.GUI_HISTORY, entityPlayer.worldObj, 0, 0, 0);
         }
     }
 

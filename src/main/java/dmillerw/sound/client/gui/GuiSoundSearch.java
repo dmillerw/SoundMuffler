@@ -191,7 +191,10 @@ public class GuiSoundSearch extends GuiScreen {
 
     @Override
     protected void keyTyped(char key, int keycode) {
-        super.keyTyped(key, keycode);
+        if (keycode == 1) {
+            GuiSoundMuffler.reopen();
+            return;
+        }
 
         if (this.searchField.isFocused()) {
             this.searchField.textboxKeyTyped(key, keycode);
