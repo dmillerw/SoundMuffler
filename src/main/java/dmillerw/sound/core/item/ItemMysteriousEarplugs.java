@@ -23,6 +23,7 @@ public class ItemMysteriousEarplugs extends ItemMagicalEarplugs {
         super();
 
         setUnlocalizedName("mysteriousEarplugs");
+        setTextureName("soundmuffler++:earplugs");
     }
 
     @Override
