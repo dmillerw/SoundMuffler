@@ -15,6 +15,6 @@ public class ItemEarplug extends Item {
         setMaxStackSize(1);
         setMaxDamage(0);
         setUnlocalizedName("earplug");
-        setTextureName("soundmuffler++:earplug");
+        setTextureName("soundmuffler++:earplugs");
     }
 }

@@ -9,6 +9,8 @@ tooltip.search=Search
 tooltip.back=Back
 tooltip.select=Select
 tooltip.preview=Preview
+tooltip.search=Search
+tooltip.history=History
 
 # Block
 tile.soundMuffler.name=Sound Muffler

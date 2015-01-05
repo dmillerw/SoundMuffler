@@ -90,7 +90,7 @@ public class SoundHandler {
             }
         }
 
-        if (sound != null) {
+        if (sound != null && !(sound instanceof SoundReplaced)) {
             player.worldObj.spawnParticle("note", (double) sound.getXPosF() + 0.5D, (double) sound.getYPosF() + 1.2D, (double) sound.getZPosF() + 0.5D, (double) (new Random().nextInt(12)) / 24.0D, 0.0D, 0.0D);
             event.result = sound;
         }

@@ -33,6 +33,7 @@ public class GuiSoundHistory extends GuiScreen {
     private int selectedIndex = -1;
 
     private GuiUVButton buttonSelect;
+    private GuiUVButton buttonBack;
 
     public GuiSoundHistory() {
         Keyboard.enableRepeatEvents(true);
@@ -52,6 +53,7 @@ public class GuiSoundHistory extends GuiScreen {
         this.guiTop = (this.height - Y_SIZE) / 2;
 
         this.buttonList.add(buttonSelect = new GuiUVButton(0, 153, 143, 176, 70, 14, 14, GUI_BLANK).setTooltip(StatCollector.translateToLocal("tooltip.select")));
+        this.buttonList.add(buttonBack = new GuiUVButton(1, 153, 123, 176, 56, 14, 14, GUI_BLANK).setTooltip(StatCollector.translateToLocal("tooltip.back")));
     }
 
     @Override
@@ -133,7 +135,11 @@ public class GuiSoundHistory extends GuiScreen {
     @Override
     protected void actionPerformed(GuiButton guiButton) {
         if (guiButton.id == 0) {
-            GuiSoundMuffler.textFieldOverride = SoundHandler.soundHistory.get(selectedIndex);
+            if (selectedIndex >= 0) {
+                GuiSoundMuffler.textFieldOverride = SoundHandler.soundHistory.get(selectedIndex);
+                GuiSoundMuffler.reopen();
+            }
+        } else if (guiButton.id == 1) {
             GuiSoundMuffler.reopen();
         }
     }

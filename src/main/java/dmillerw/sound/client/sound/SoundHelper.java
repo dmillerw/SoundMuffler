@@ -58,16 +58,21 @@ public class SoundHelper {
     }
 
     public static List<ResourceLocation> getSoundsForCategory(SoundCategory ... categories) {
-        List<ResourceLocation> set = Lists.newArrayList();
-        Iterator<ResourceLocation> iterator = getSoundKeys().iterator();
-        while (iterator.hasNext()) {
-            ResourceLocation resourceLocation = iterator.next();
-            SoundEventAccessorComposite composite = (SoundEventAccessorComposite) getSoundRegistry().getObject(resourceLocation);
-            if (ArrayUtils.contains(categories, composite.getSoundCategory())) {
-                set.add(resourceLocation);
+        List<ResourceLocation> list = Lists.newArrayList();
+        Set<ResourceLocation> set = getSoundKeys();
+
+        if (set != null) {
+            Iterator<ResourceLocation> iterator = set.iterator();
+            while (iterator.hasNext()) {
+                ResourceLocation resourceLocation = iterator.next();
+                SoundEventAccessorComposite composite = (SoundEventAccessorComposite) getSoundRegistry().getObject(resourceLocation);
+                if (ArrayUtils.contains(categories, composite.getSoundCategory())) {
+                    set.add(resourceLocation);
+                }
             }
         }
-        return set;
+
+        return list;
     }
 
     public static ISound getMuffledSound(String name, ISound sound, SoundCategory soundCategory,  ItemStack itemStack) {
