@@ -231,8 +231,10 @@ public class GuiSoundSearch extends GuiScreen {
             }
             GuiSoundMuffler.reopen();
         } else if (guiButton.id == 4) {
-            SoundEntryString soundEntryString = listContents.get(selectedIndex);
-            Minecraft.getMinecraft().getSoundHandler().playSound(PositionedSoundRecord.func_147673_a(new ResourceLocation(soundEntryString.resourceDomain, soundEntryString.fullPath)));
+            if (selectedIndex != -1) {
+                SoundEntryString soundEntryString = listContents.get(selectedIndex);
+                Minecraft.getMinecraft().getSoundHandler().playSound(PositionedSoundRecord.func_147673_a(new ResourceLocation(soundEntryString.resourceDomain, soundEntryString.fullPath)));
+            }
         }
     }
 

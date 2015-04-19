@@ -1,11 +1,12 @@
 package dmillerw.sound.client.gui;
 
-import cpw.mods.fml.client.config.GuiButtonExt;
 import cpw.mods.fml.client.config.GuiUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.util.ResourceLocation;
+
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
@@ -16,7 +17,7 @@ import java.util.List;
 /**
  * @author dmillerw
  */
-public class GuiUVButton extends GuiButtonExt {
+public class GuiUVButton extends GuiButton {
 
     private final ResourceLocation resourceLocation;
 

@@ -111,6 +111,7 @@ public abstract class GuiSoundMuffler extends GuiScreen {
         this.textFieldVolume = new GuiTextField(mc.fontRenderer, guiLeft + 145, guiTop + 11, 18, 20);
         this.textFieldVolume.setFocused(false);
         this.textFieldVolume.setEnableBackgroundDrawing(false);
+        this.textFieldVolume.setText("0");
 
         this.buttonList.add(buttonUp = new GuiUVButton(0, 153, 26, 176, 14, 14, 14, GUI_BLANK).setTooltip(StatCollector.translateToLocal("tooltip.scrollUp")));
         this.buttonList.add(buttonDown = new GuiUVButton(1, 153, 46, 176, 28, 14, 14, GUI_BLANK).setTooltip(StatCollector.translateToLocal("tooltip.scrollDown")));
@@ -212,7 +213,6 @@ public abstract class GuiSoundMuffler extends GuiScreen {
                 addSoundEntry(soundEntry);
 
                 this.textFieldSound.setText("");
-                this.textFieldVolume.setText("");
 
                 return;
             }
