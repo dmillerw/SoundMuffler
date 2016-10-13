@@ -1,0 +1,6 @@
+{
+  "parent": "soundmuffler:block/sound_muffler",
+  "textures": {
+    "layer0": "soundmuffler:blocks/sound_muffler"
+  }
+}

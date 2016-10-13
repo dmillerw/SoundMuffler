@@ -7,6 +7,7 @@ import net.minecraft.client.audio.ISound;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.SoundCategory;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -27,7 +28,7 @@ public class ItemMysteriousEarplugs extends ItemMagicalEarplugs {
 
     @Override
     public void addInformation(ItemStack itemStack, EntityPlayer entityPlayer, List list, boolean debug) {
-//        list.add(StatCollector.translateToLocal("item.mysteriousEarplugs.tooltip"));
+        list.add(I18n.translateToLocal("item.soundmuffler:mysterious_earplugs.tooltip"));
     }
 
     @Override

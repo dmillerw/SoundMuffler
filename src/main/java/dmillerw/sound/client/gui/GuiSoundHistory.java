@@ -5,9 +5,9 @@ import dmillerw.sound.core.lib.ModInfo;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.translation.I18n;
 import org.lwjgl.input.Keyboard;
 
 import java.io.IOException;
@@ -55,8 +55,8 @@ public class GuiSoundHistory extends GuiScreen {
         this.guiLeft = (this.width - X_SIZE) / 2;
         this.guiTop = (this.height - Y_SIZE) / 2;
 
-        this.buttonList.add(buttonSelect = new GuiUVButton(0, 153, 143, 176, 70, 14, 14, GUI_BLANK).setTooltip(I18n.format("tooltip.select")));
-        this.buttonList.add(buttonBack = new GuiUVButton(1, 153, 123, 176, 56, 14, 14, GUI_BLANK).setTooltip(I18n.format("tooltip.back")));
+        this.buttonList.add(buttonSelect = new GuiUVButton(0, 153, 143, 176, 70, 14, 14, GUI_BLANK).setTooltip(I18n.translateToLocal(ModInfo.MOD_ID + ":tooltip.select")));
+        this.buttonList.add(buttonBack = new GuiUVButton(1, 153, 123, 176, 56, 14, 14, GUI_BLANK).setTooltip(I18n.translateToLocal(ModInfo.MOD_ID + ":tooltip.back")));
     }
 
     @Override

@@ -1,0 +1,22 @@
+# Misc
+itemGroup.soundmuffler=SoundMuffler++
+
+# Tooltip
+tooltip.soundmuffler:scrollUp=Scroll Up
+tooltip.soundmuffler:scrollDown=Scroll Down
+tooltip.soundmuffler:remove=Remove Selected Entry
+tooltip.soundmuffler:search=Search
+tooltip.soundmuffler:back=Back
+tooltip.soundmuffler:select=Select
+tooltip.soundmuffler:preview=Preview
+tooltip.soundmuffler:search=Search
+tooltip.soundmuffler:history=History
+
+# Block
+tile.soundmuffler:sound_muffler.name=Sound Muffler
+
+# Item
+item.soundmuffler:earplug.name=Earplug
+item.soundmuffler:magical_earplugs.name=Magical Earplugs
+item.soundmuffler:mysterious_earplugs.name=Mysterious Earplugs
+item.soundmuffler:mysterious_earplugs.tooltip=The lightning seems to have changed these somehow...

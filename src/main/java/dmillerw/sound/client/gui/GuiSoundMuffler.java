@@ -13,11 +13,11 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.util.text.translation.I18n;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
@@ -114,11 +114,11 @@ public abstract class GuiSoundMuffler extends GuiScreen {
         this.textFieldVolume.setFocused(false);
         this.textFieldVolume.setEnableBackgroundDrawing(false);
 
-        this.buttonList.add(buttonUp = new GuiUVButton(0, 153, 26, 176, 14, 14, 14, GUI_BLANK).setTooltip(I18n.format("tooltip.scrollUp")));
-        this.buttonList.add(buttonDown = new GuiUVButton(1, 153, 46, 176, 28, 14, 14, GUI_BLANK).setTooltip(I18n.format("tooltip.scrollDown")));
-        this.buttonList.add(buttonDelete = new GuiUVButton(2, 153, 143, 176, 0, 14, 14, GUI_BLANK).setTooltip(I18n.format("tooltip.remove")));
-        this.buttonList.add(buttonSearch = new GuiUVButton(3, 7, 7, 176, 41, 14, 14, GUI_BLANK).setTooltip(I18n.format("tooltip.search")));
-        this.buttonList.add(buttonHistory = new GuiUVButton(4, 153, 66, 176, 56, 14, 14, GUI_BLANK).setTooltip(I18n.format("tooltip.history")));
+        this.buttonList.add(buttonUp = new GuiUVButton(0, 153, 26, 176, 14, 14, 14, GUI_BLANK).setTooltip(I18n.translateToLocal(ModInfo.MOD_ID + ":tooltip.scrollUp")));
+        this.buttonList.add(buttonDown = new GuiUVButton(1, 153, 46, 176, 28, 14, 14, GUI_BLANK).setTooltip(I18n.translateToLocal(ModInfo.MOD_ID + ":tooltip.scrollDown")));
+        this.buttonList.add(buttonDelete = new GuiUVButton(2, 153, 143, 176, 0, 14, 14, GUI_BLANK).setTooltip(I18n.translateToLocal(ModInfo.MOD_ID + ":tooltip.remove")));
+        this.buttonList.add(buttonSearch = new GuiUVButton(3, 7, 7, 176, 41, 14, 14, GUI_BLANK).setTooltip(I18n.translateToLocal(ModInfo.MOD_ID + ":tooltip.search")));
+        this.buttonList.add(buttonHistory = new GuiUVButton(4, 153, 66, 176, 56, 14, 14, GUI_BLANK).setTooltip(I18n.translateToLocal(ModInfo.MOD_ID + ":tooltip.history")));
     }
 
     @Override

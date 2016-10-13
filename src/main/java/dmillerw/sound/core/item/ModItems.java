@@ -15,7 +15,7 @@ public class ModItems {
 
     public static final ItemEarplug earplug = null;
     public static final ItemMagicalEarplugs magical_earplugs = null;
-    public static final ItemMysteriousEarplugs mysterious_earplugs = null;
+//    public static final ItemMysteriousEarplugs mysterious_earplugs = null;
 
     @Mod.EventBusSubscriber
     public static class RegistrationHandler {
@@ -24,8 +24,8 @@ public class ModItems {
         public static void addItems(RegistryEvent.Register<Item> event) {
             event.getRegistry().registerAll(
                     new ItemEarplug().setRegistryName(ModInfo.MOD_ID, "earplug"),
-                    new ItemMagicalEarplugs().setRegistryName(ModInfo.MOD_ID, "magical_earplugs"),
-                    new ItemMysteriousEarplugs().setRegistryName(ModInfo.MOD_ID, "mysterious_earplugs")
+                    new ItemMagicalEarplugs().setRegistryName(ModInfo.MOD_ID, "magical_earplugs")
+//                    new ItemMysteriousEarplugs().setRegistryName(ModInfo.MOD_ID, "mysterious_earplugs")
             );
         }
     }
