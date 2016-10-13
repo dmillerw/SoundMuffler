@@ -5,6 +5,8 @@ import com.google.common.collect.Sets;
 import dmillerw.sound.client.sound.SoundHelper;
 import dmillerw.sound.core.lib.ModInfo;
 import joptsimple.internal.Strings;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
@@ -14,7 +16,9 @@ import net.minecraft.client.renderer.VertexBuffer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import org.apache.commons.lang3.ArrayUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -239,14 +243,17 @@ public class GuiSoundSearch extends GuiScreen {
             GuiSoundMuffler.reopen();
         } else if (guiButton.id == 4) {
             SoundEntryString soundEntryString = listContents.get(selectedIndex);
-//            Minecraft.getMinecraft().getSoundHandler().getAccessor(new ResourceLocation(soundEntryString.resourceDomain, soundEntryString.fullPath));
-            //TODO: Sound preview
+
+            SoundEvent sound = ForgeRegistries.SOUND_EVENTS.getValue(new ResourceLocation(soundEntryString.resourceDomain, soundEntryString.fullPath));
+            if (sound != null) {
+                Minecraft.getMinecraft().getSoundHandler().playSound(PositionedSoundRecord.getMasterRecord(sound, 1.0F));
+            }
         }
     }
 
     private void refresh() {
         listOffset = 0;
-
+        selectedIndex = 0;
         listContents.clear();
 
         Set<SoundEntryString> temporarySet = Sets.newHashSet();
