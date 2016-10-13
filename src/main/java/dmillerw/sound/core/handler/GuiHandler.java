@@ -29,7 +29,7 @@ public class GuiHandler implements IGuiHandler {
             GuiSoundMuffler.cacheLastCoordinates(x, y, z);
 
             if (y <= 0)
-                return new GuiSoundMuffler.Item(player.getActiveItemStack());
+                return new GuiSoundMuffler.Item(player.getHeldItemMainhand());
             else
                 return new GuiSoundMuffler.Tile((ITileSoundMuffler) world.getTileEntity(new BlockPos(x, y, z)));
 
