@@ -1,63 +1,51 @@
 package dmillerw.sound.client.sound;
 
 import com.google.common.collect.Lists;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import dmillerw.sound.api.IItemSoundMuffler;
 import dmillerw.sound.api.ITileSoundMuffler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.ISound;
-import net.minecraft.client.audio.SoundCategory;
-import net.minecraft.client.audio.SoundEventAccessorComposite;
+import net.minecraft.client.audio.SoundEventAccessor;
 import net.minecraft.client.audio.SoundRegistry;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.RegistrySimple;
 import net.minecraft.util.ResourceLocation;
-import org.apache.commons.lang3.ArrayUtils;
+import net.minecraft.util.SoundCategory;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 /**
  * @author dmillerw
  */
-@SideOnly(Side.CLIENT)
 public class SoundHelper {
 
-    private static SoundRegistry sndRegistry;
+    private static SoundRegistry soundRegistry;
 
     private static Method getKeysMethod;
 
     private static SoundRegistry getSoundRegistry() {
-        if (sndRegistry == null) {
+        if (soundRegistry == null) {
             try {
                 Class clazz = Class.forName("net.minecraft.client.audio.SoundHandler");
-                Field field = clazz.getDeclaredField("sndRegistry");
+                Field field = clazz.getDeclaredField("soundRegistry");
                 field.setAccessible(true);
-                SoundHelper.sndRegistry = (SoundRegistry) field.get(Minecraft.getMinecraft().getSoundHandler());
+                SoundHelper.soundRegistry = (SoundRegistry) field.get(Minecraft.getMinecraft().getSoundHandler());
                 field.setAccessible(false);
             } catch (Exception ex) { ex.printStackTrace(); }
         }
-        return sndRegistry;
+        return soundRegistry;
     }
 
-    private static Set<ResourceLocation> getSoundKeys() {
-        try {
-            if (getKeysMethod == null) {
-                try {
-                    Class clazz = RegistrySimple.class;
-                    getKeysMethod = clazz.getMethod("getKeys");
-                } catch (Exception ex) { ex.printStackTrace(); };
-            }
-            return (Set<ResourceLocation>) getKeysMethod.invoke(getSoundRegistry());
-        } catch (Exception ex) { ex.printStackTrace(); }
-        return null;
+    public static Set<ResourceLocation> getSoundKeys() {
+        return ForgeRegistries.SOUND_EVENTS.getKeys();
     }
 
-    public static List<ResourceLocation> getSoundsForCategory(SoundCategory ... categories) {
+    public static List<ResourceLocation> getSoundsForCategory(SoundCategory... categories) {
         List<ResourceLocation> list = Lists.newArrayList();
         Set<ResourceLocation> set = getSoundKeys();
 
@@ -65,10 +53,10 @@ public class SoundHelper {
             Iterator<ResourceLocation> iterator = set.iterator();
             while (iterator.hasNext()) {
                 ResourceLocation resourceLocation = iterator.next();
-                SoundEventAccessorComposite composite = (SoundEventAccessorComposite) getSoundRegistry().getObject(resourceLocation);
-                if (ArrayUtils.contains(categories, composite.getSoundCategory())) {
-                    set.add(resourceLocation);
-                }
+                SoundEventAccessor composite = (SoundEventAccessor) getSoundRegistry().getObject(resourceLocation);
+//                if (ArrayUtils.contains(categories, composite.getCategory())) {
+//                    set.add(resourceLocation);
+//                }
             }
         }
 
@@ -92,12 +80,12 @@ public class SoundHelper {
         if (tileSoundMuffler == null)
             return null;
 
-        if (Minecraft.getMinecraft().theWorld.provider.dimensionId != tileSoundMuffler.getDimension())
+        if (Minecraft.getMinecraft().theWorld.provider.getDimension() != tileSoundMuffler.getDimension())
             return null;
 
-        double dx = (tileSoundMuffler.getX() + 0.5) - sound.getXPosF();
-        double dy = (tileSoundMuffler.getY() + 0.5) - sound.getYPosF();
-        double dz = (tileSoundMuffler.getZ() + 0.5) - sound.getZPosF();
+        double dx = (tileSoundMuffler.getPosition().getX() + 0.5) - sound.getXPosF();
+        double dy = (tileSoundMuffler.getPosition().getY() + 0.5) - sound.getYPosF();
+        double dz = (tileSoundMuffler.getPosition().getZ() + 0.5) - sound.getZPosF();
         double distance = dx * dx + dy * dy + dz * dz;
 
         if (distance > tileSoundMuffler.getRange() || distance < 0.0D)
@@ -107,9 +95,9 @@ public class SoundHelper {
     }
 
     public static ISound getRandomSound(ISound oldSound, SoundCategory soundCategory) {
-        SoundEventAccessorComposite random = Minecraft.getMinecraft().getSoundHandler().getRandomSoundFromCategories(soundCategory);
+        SoundEventAccessor random = getSoundRegistry().getRandomObject(new Random());
         if (random != null)
-            return new SoundReplaced(oldSound, random.getSoundEventLocation());
+            return new SoundReplaced(oldSound, random.getLocation());
         else
             return oldSound;
     }

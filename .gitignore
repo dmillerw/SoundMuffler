@@ -1,17 +1,22 @@
-# Ignore Everything
-/*
-/*/
+# eclipse
+bin
+*.launch
+.settings
+.metadata
+.classpath
+.project
 
-# Except These
-!/.gitignore
-!/src/
-!/gradle/
-!/gradlew
-!/README
-!/LICENSE
-!/gradle.properties
-!/build.gradle
-!/.travis.yml
-!/build.sh
-=======
-!/build.gradle
+# idea
+out
+*.ipr
+*.iws
+*.iml
+.idea
+
+# gradle
+build
+.gradle
+
+# other
+eclipse
+run

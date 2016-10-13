@@ -1,30 +1,33 @@
 package dmillerw.sound.core.block;
 
 import com.google.common.collect.Lists;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import dmillerw.sound.api.EventSoundMufflerTile;
 import dmillerw.sound.api.ITileSoundMuffler;
 import dmillerw.sound.api.SoundEntry;
 import dmillerw.sound.client.sound.SoundMuffled;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.audio.ISound;
-import net.minecraft.client.audio.SoundCategory;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.network.NetworkManager;
-import net.minecraft.network.Packet;
-import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
+import net.minecraft.network.play.server.SPacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ITickable;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.List;
 
 /**
  * @author dmillerw
  */
-public class TileSoundMuffler extends TileEntity implements ITileSoundMuffler {
+public class TileSoundMuffler extends TileEntity implements ITileSoundMuffler, ITickable {
 
     private static final int RANGE = 64;
 
@@ -44,7 +47,7 @@ public class TileSoundMuffler extends TileEntity implements ITileSoundMuffler {
     }
 
     @Override
-    public void updateEntity() {
+    public void update() {
         // Sound mufflers are only "registered" on the client
         if (worldObj.isRemote) {
             if (!registered)
@@ -71,7 +74,7 @@ public class TileSoundMuffler extends TileEntity implements ITileSoundMuffler {
     }
 
     @Override
-    public void writeToNBT(NBTTagCompound nbtTagCompound) {
+    public NBTTagCompound writeToNBT(NBTTagCompound nbtTagCompound) {
         super.writeToNBT(nbtTagCompound);
 
         NBTTagList nbtTagList = new NBTTagList();
@@ -81,6 +84,8 @@ public class TileSoundMuffler extends TileEntity implements ITileSoundMuffler {
             nbtTagList.appendTag(entryTag);
         }
         nbtTagCompound.setTag("entries", nbtTagList);
+
+        return nbtTagCompound;
     }
 
     @Override
@@ -94,17 +99,17 @@ public class TileSoundMuffler extends TileEntity implements ITileSoundMuffler {
         }
     }
 
-    // PACKET HANDLING
+    @Nullable
     @Override
-    public Packet getDescriptionPacket() {
+    public SPacketUpdateTileEntity getUpdatePacket() {
         NBTTagCompound nbtTagCompound = new NBTTagCompound();
         writeToNBT(nbtTagCompound);
-        return new S35PacketUpdateTileEntity(xCoord, yCoord, zCoord, 0, nbtTagCompound);
+        return new SPacketUpdateTileEntity(pos, 0, nbtTagCompound);
     }
 
     @Override
-    public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt) {
-        readFromNBT(pkt.func_148857_g());
+    public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
+        readFromNBT(pkt.getNbtCompound());
     }
 
     /* ISOUNDMUFFLER */
@@ -115,22 +120,12 @@ public class TileSoundMuffler extends TileEntity implements ITileSoundMuffler {
 
     @Override
     public int getDimension() {
-        return getWorldObj().provider.dimensionId;
+        return getWorld().provider.getDimension();
     }
 
     @Override
-    public int getX() {
-        return xCoord;
-    }
-
-    @Override
-    public int getY() {
-        return yCoord;
-    }
-
-    @Override
-    public int getZ() {
-        return zCoord;
+    public BlockPos getPosition() {
+        return pos;
     }
 
     @SideOnly(Side.CLIENT)
@@ -151,7 +146,7 @@ public class TileSoundMuffler extends TileEntity implements ITileSoundMuffler {
     @Override
     public void addSoundEntry(SoundEntry soundEntry) {
         soundEntryList.add(soundEntry);
-        worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+        markDirtyAndNotify();
     }
 
     @Override
@@ -165,6 +160,14 @@ public class TileSoundMuffler extends TileEntity implements ITileSoundMuffler {
                 removed = true;
             }
         }
-        worldObj.markBlockForUpdate(xCoord, yCoord, zCoord);
+        markDirtyAndNotify();
+    }
+
+    /* INTERNAL METHODS */
+    public void markDirtyAndNotify() {
+        markDirty();
+
+        IBlockState state = worldObj.getBlockState(pos);
+        worldObj.notifyBlockUpdate(pos, state, state, 3);
     }
 }

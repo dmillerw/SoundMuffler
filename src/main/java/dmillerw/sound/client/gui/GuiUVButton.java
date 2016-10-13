@@ -1,11 +1,11 @@
 package dmillerw.sound.client.gui;
 
-import cpw.mods.fml.client.config.GuiButtonExt;
-import cpw.mods.fml.client.config.GuiUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.client.config.GuiButtonExt;
+import net.minecraftforge.fml.client.config.GuiUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 
@@ -45,9 +45,9 @@ public class GuiUVButton extends GuiButtonExt {
     @Override
     public void drawButton(Minecraft mc, int mouseX, int mouseY) {
         if (this.visible) {
-            this.field_146123_n = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
-            int k = this.getHoverState(this.field_146123_n);
-            GuiUtils.drawContinuousTexturedBox(buttonTextures, this.xPosition, this.yPosition, 0, 46 + k * 20, this.width, this.height, 200, 20, 2, 3, 2, 2, this.zLevel);
+            this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
+            int k = this.getHoverState(this.hovered);
+            GuiUtils.drawContinuousTexturedBox(BUTTON_TEXTURES, this.xPosition, this.yPosition, 0, 46 + k * 20, this.width, this.height, 200, 20, 2, 3, 2, 2, this.zLevel);
             this.mouseDragged(mc, mouseX, mouseY);
             mc.getTextureManager().bindTexture(resourceLocation);
             drawTexturedModalRect(this.xPosition + 1, this.yPosition + 1, u, v, w, h);
@@ -55,9 +55,9 @@ public class GuiUVButton extends GuiButtonExt {
     }
 
     public void drawTooltip(Minecraft mc, int mouseX, int mouseY) {
-        if (field_146123_n) {
+        if (hovered) {
             if (tooltip != null && !tooltip.isEmpty()) {
-                drawHoveringText(mc, Arrays.asList(tooltip), mouseX, mouseY, mc.fontRenderer);
+                drawHoveringText(mc, Arrays.asList(tooltip), mouseX, mouseY, mc.fontRendererObj);
             }
         }
     }

@@ -6,20 +6,25 @@ import dmillerw.sound.api.ITileSoundMuffler;
 import dmillerw.sound.api.SoundEntry;
 import dmillerw.sound.core.handler.GuiHandler;
 import dmillerw.sound.core.handler.InternalHandler;
+import dmillerw.sound.core.lib.ModInfo;
 import dmillerw.sound.core.network.PacketSoundMuffler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StatCollector;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -27,7 +32,7 @@ import java.util.List;
  */
 public abstract class GuiSoundMuffler extends GuiScreen {
 
-    private static final ResourceLocation GUI_BLANK = new ResourceLocation("soundmuffler++:textures/gui/configure.png");
+    private static final ResourceLocation GUI_BLANK = new ResourceLocation(ModInfo.MOD_ID, "textures/gui/configure.png");
 
     private static final int X_SIZE = 176;
     private static final int Y_SIZE = 166;
@@ -98,7 +103,7 @@ public abstract class GuiSoundMuffler extends GuiScreen {
         this.guiLeft = (this.width - X_SIZE) / 2;
         this.guiTop = (this.height - Y_SIZE) / 2;
 
-        this.textFieldSound = new GuiTextField(mc.fontRenderer, guiLeft + 29, guiTop + 11, 101, 20);
+        this.textFieldSound = new GuiTextField(-1, mc.fontRendererObj, guiLeft + 29, guiTop + 11, 101, 20);
         this.textFieldSound.setFocused(true);
         this.textFieldSound.setEnableBackgroundDrawing(false);
         if (textFieldOverride != null && !textFieldOverride.isEmpty()) {
@@ -108,15 +113,15 @@ public abstract class GuiSoundMuffler extends GuiScreen {
             this.textFieldSound.setText(textFieldOverride);
         }
 
-        this.textFieldVolume = new GuiTextField(mc.fontRenderer, guiLeft + 145, guiTop + 11, 18, 20);
+        this.textFieldVolume = new GuiTextField(-2, mc.fontRendererObj, guiLeft + 145, guiTop + 11, 18, 20);
         this.textFieldVolume.setFocused(false);
         this.textFieldVolume.setEnableBackgroundDrawing(false);
 
-        this.buttonList.add(buttonUp = new GuiUVButton(0, 153, 26, 176, 14, 14, 14, GUI_BLANK).setTooltip(StatCollector.translateToLocal("tooltip.scrollUp")));
-        this.buttonList.add(buttonDown = new GuiUVButton(1, 153, 46, 176, 28, 14, 14, GUI_BLANK).setTooltip(StatCollector.translateToLocal("tooltip.scrollDown")));
-        this.buttonList.add(buttonDelete = new GuiUVButton(2, 153, 143, 176, 0, 14, 14, GUI_BLANK).setTooltip(StatCollector.translateToLocal("tooltip.remove")));
-        this.buttonList.add(buttonSearch = new GuiUVButton(3, 7, 7, 176, 41, 14, 14, GUI_BLANK).setTooltip(StatCollector.translateToLocal("tooltip.search")));
-        this.buttonList.add(buttonHistory = new GuiUVButton(4, 153, 66, 176, 56, 14, 14, GUI_BLANK).setTooltip(StatCollector.translateToLocal("tooltip.history")));
+        this.buttonList.add(buttonUp = new GuiUVButton(0, 153, 26, 176, 14, 14, 14, GUI_BLANK).setTooltip(I18n.format("tooltip.scrollUp")));
+        this.buttonList.add(buttonDown = new GuiUVButton(1, 153, 46, 176, 28, 14, 14, GUI_BLANK).setTooltip(I18n.format("tooltip.scrollDown")));
+        this.buttonList.add(buttonDelete = new GuiUVButton(2, 153, 143, 176, 0, 14, 14, GUI_BLANK).setTooltip(I18n.format("tooltip.remove")));
+        this.buttonList.add(buttonSearch = new GuiUVButton(3, 7, 7, 176, 41, 14, 14, GUI_BLANK).setTooltip(I18n.format("tooltip.search")));
+        this.buttonList.add(buttonHistory = new GuiUVButton(4, 153, 66, 176, 56, 14, 14, GUI_BLANK).setTooltip(I18n.format("tooltip.history")));
     }
 
     @Override
@@ -133,32 +138,37 @@ public abstract class GuiSoundMuffler extends GuiScreen {
         final int maxX = guiLeft + LIST_X_END + 5;
 
         for (int i=0; i<Math.min(soundEntryList.size(), MAX_LINE_COUNT); i++) {
-            final int minY = guiTop + LIST_Y + (mc.fontRenderer.FONT_HEIGHT * i);
-            final int maxY = minY + mc.fontRenderer.FONT_HEIGHT;
+            final int minY = guiTop + LIST_Y + (mc.fontRendererObj.FONT_HEIGHT * i);
+            final int maxY = minY + mc.fontRendererObj.FONT_HEIGHT;
 
             if (selectedIndex == listOffset + i) {
-                GL11.glPushMatrix();
-                GL11.glDisable(GL11.GL_TEXTURE_2D);
-                Tessellator tessellator = Tessellator.instance;
-                tessellator.startDrawingQuads();
-                tessellator.setColorOpaque_I(0x333333);
-                tessellator.addVertex(minX, maxY, zLevel);
-                tessellator.addVertex(maxX, maxY, zLevel);
-                tessellator.addVertex(maxX, minY, zLevel);
-                tessellator.addVertex(minX, minY, zLevel);
-                tessellator.draw();
-                GL11.glEnable(GL11.GL_TEXTURE_2D);
-                GL11.glPopMatrix();
+                GlStateManager.pushMatrix();
+                GlStateManager.disableTexture2D();
+
+                Tessellator tessellator = Tessellator.getInstance();
+                VertexBuffer vertexBuffer = tessellator.getBuffer();
+
+                vertexBuffer.begin(7, DefaultVertexFormats.POSITION_COLOR);
+
+                vertexBuffer.color(51, 51, 51, 255);
+                vertexBuffer.pos(minX, maxY, zLevel);
+                vertexBuffer.pos(maxX, maxY, zLevel);
+                vertexBuffer.pos(maxX, minY, zLevel);
+                vertexBuffer.pos(minX, minY, zLevel);
+                vertexBuffer.finishDrawing();
+
+                GlStateManager.enableTexture2D();
+                GlStateManager.popMatrix();
             }
 
             SoundEntry soundEntry = soundEntryList.get(listOffset + i);
             String volume = String.valueOf(soundEntry.volumeModifier) + "%";
-            mc.fontRenderer.drawString(soundEntry.name, guiLeft + LIST_X, guiTop + LIST_Y + (mc.fontRenderer.FONT_HEIGHT * i), 0xFFFFFF);
+            mc.fontRendererObj.drawString(soundEntry.name, guiLeft + LIST_X, guiTop + LIST_Y + (mc.fontRendererObj.FONT_HEIGHT * i), 0xFFFFFF);
 
             // To offset the number display by half a pixel (woo, cheating)
             GL11.glPushMatrix();
             GL11.glTranslated(0, 0.75, 0);
-            mc.fontRenderer.drawString(volume, guiLeft + LIST_X_END - (mc.fontRenderer.getStringWidth(volume)), guiTop + LIST_Y + (mc.fontRenderer.FONT_HEIGHT * i), 0xFFFFFF);
+            mc.fontRendererObj.drawString(volume, guiLeft + LIST_X_END - (mc.fontRendererObj.getStringWidth(volume)), guiTop + LIST_Y + (mc.fontRendererObj.FONT_HEIGHT * i), 0xFFFFFF);
             GL11.glPopMatrix();
         }
 
@@ -186,7 +196,7 @@ public abstract class GuiSoundMuffler extends GuiScreen {
     }
 
     @Override
-    protected void keyTyped(char key, int keycode) {
+    protected void keyTyped(char key, int keycode) throws IOException {
         super.keyTyped(key, keycode);
 
         if (keycode == Keyboard.KEY_TAB) {
@@ -236,7 +246,7 @@ public abstract class GuiSoundMuffler extends GuiScreen {
     }
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) {
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         super.mouseClicked(mouseX - guiLeft, mouseY - guiTop, mouseButton);
 
         if (mouseButton != 0)
@@ -246,8 +256,8 @@ public abstract class GuiSoundMuffler extends GuiScreen {
         final int maxX = guiLeft + LIST_X_END;
 
         for (int i=0; i<Math.min(soundEntryList.size(), MAX_LINE_COUNT); i++) {
-            final int minY = guiTop + LIST_Y + (mc.fontRenderer.FONT_HEIGHT * i);
-            final int maxY = minY + mc.fontRenderer.FONT_HEIGHT;
+            final int minY = guiTop + LIST_Y + (mc.fontRendererObj.FONT_HEIGHT * i);
+            final int maxY = minY + mc.fontRendererObj.FONT_HEIGHT;
 
             if (mouseX >= minX && mouseX <= maxX && mouseY >= minY && mouseY <= maxY) {
                 selectedIndex = listOffset + i;

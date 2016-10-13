@@ -1,11 +1,11 @@
 package dmillerw.sound.core.handler;
 
 import com.google.common.collect.Lists;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import dmillerw.sound.SoundMuffler;
 import dmillerw.sound.api.EventSoundMufflerTile;
 import dmillerw.sound.api.ITileSoundMuffler;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 import java.util.List;
 

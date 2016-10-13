@@ -1,14 +1,14 @@
 package dmillerw.sound.core.item;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import dmillerw.sound.client.sound.SoundHelper;
 import dmillerw.sound.client.sound.SoundReplaced;
+import dmillerw.sound.core.lib.ModInfo;
 import net.minecraft.client.audio.ISound;
-import net.minecraft.client.audio.SoundCategory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.SoundCategory;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
@@ -22,17 +22,16 @@ public class ItemMysteriousEarplugs extends ItemMagicalEarplugs {
     public ItemMysteriousEarplugs() {
         super();
 
-        setUnlocalizedName("mysteriousEarplugs");
-        setTextureName("soundmuffler++:earplugs");
+        setUnlocalizedName(ModInfo.MOD_ID + "mysterious_earplugs");
     }
 
     @Override
     public void addInformation(ItemStack itemStack, EntityPlayer entityPlayer, List list, boolean debug) {
-        list.add(StatCollector.translateToLocal("item.mysteriousEarplugs.tooltip"));
+//        list.add(StatCollector.translateToLocal("item.mysteriousEarplugs.tooltip"));
     }
 
     @Override
-    public boolean hasEffect(ItemStack itemStack, int pass) {
+    public boolean hasEffect(ItemStack stack) {
         return true;
     }
 
@@ -45,7 +44,7 @@ public class ItemMysteriousEarplugs extends ItemMagicalEarplugs {
             return SoundHelper.getRandomSound(sound, soundCategory);
         } else {
             cooldown--;
-            return new SoundReplaced(sound, sound.getPositionedSoundLocation());
+            return new SoundReplaced(sound, sound.getSoundLocation());
         }
     }
 }

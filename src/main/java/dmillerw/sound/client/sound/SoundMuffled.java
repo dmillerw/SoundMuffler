@@ -1,7 +1,11 @@
 package dmillerw.sound.client.sound;
 
-import net.minecraft.client.audio.ISound;
+import net.minecraft.client.audio.*;
+import net.minecraft.client.audio.SoundHandler;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundCategory;
+
+import javax.annotation.Nullable;
 
 /**
  * @author dmillerw
@@ -9,7 +13,6 @@ import net.minecraft.util.ResourceLocation;
 public class SoundMuffled implements ISound {
 
     private ISound sound;
-
     private int volumeModifier;
 
     public SoundMuffled(ISound sound, int volumeModifier) {
@@ -18,8 +21,24 @@ public class SoundMuffled implements ISound {
     }
 
     @Override
-    public ResourceLocation getPositionedSoundLocation() {
-        return sound.getPositionedSoundLocation();
+    public ResourceLocation getSoundLocation() {
+        return sound.getSoundLocation();
+    }
+
+    @Nullable
+    @Override
+    public SoundEventAccessor createAccessor(SoundHandler handler) {
+        return sound.createAccessor(handler);
+    }
+
+    @Override
+    public Sound getSound() {
+        return sound.getSound();
+    }
+
+    @Override
+    public SoundCategory getCategory() {
+        return sound.getCategory();
     }
 
     @Override

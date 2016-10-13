@@ -1,9 +1,10 @@
 package dmillerw.sound.api;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.audio.ISound;
-import net.minecraft.client.audio.SoundCategory;
+import net.minecraft.util.SoundCategory;
+import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
@@ -16,11 +17,7 @@ public interface ITileSoundMuffler {
 
     public int getDimension();
 
-    public int getX();
-
-    public int getY();
-
-    public int getZ();
+    public BlockPos getPosition();
 
     @SideOnly(Side.CLIENT)
     public ISound getMuffledSound(String name, ISound sound, SoundCategory soundCategory);

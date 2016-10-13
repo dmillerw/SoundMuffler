@@ -1,19 +1,20 @@
 package dmillerw.sound;
 
-import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.SidedProxy;
-import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLPostInitializationEvent;
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import dmillerw.sound.core.CommonProxy;
+import dmillerw.sound.core.lib.ModInfo;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.SidedProxy;
+import net.minecraftforge.fml.common.event.FMLInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 /**
  * @author dmillerw
  */
-@Mod(modid = "SoundMuffler++", name = "SoundMuffler++", version = "%MOD_VERSION%")
+@Mod(modid = ModInfo.MOD_ID, name = ModInfo.MOD_NAME, version = ModInfo.MOD_VERSION)
 public class SoundMuffler {
 
-    @Mod.Instance("SoundMuffler++")
+    @Mod.Instance(ModInfo.MOD_ID)
     public static SoundMuffler instance;
 
     @SidedProxy(serverSide = "dmillerw.sound.core.CommonProxy", clientSide = "dmillerw.sound.client.ClientProxy")

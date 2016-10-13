@@ -1,12 +1,13 @@
 package dmillerw.sound.core.handler;
 
-import cpw.mods.fml.common.network.IGuiHandler;
 import dmillerw.sound.api.ITileSoundMuffler;
 import dmillerw.sound.client.gui.GuiSoundHistory;
 import dmillerw.sound.client.gui.GuiSoundMuffler;
 import dmillerw.sound.client.gui.GuiSoundSearch;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.IGuiHandler;
 
 /**
  * @author dmillerw
@@ -28,9 +29,9 @@ public class GuiHandler implements IGuiHandler {
             GuiSoundMuffler.cacheLastCoordinates(x, y, z);
 
             if (y <= 0)
-                return new GuiSoundMuffler.Item(player.getHeldItem());
+                return new GuiSoundMuffler.Item(player.getActiveItemStack());
             else
-                return new GuiSoundMuffler.Tile((ITileSoundMuffler) world.getTileEntity(x, y, z));
+                return new GuiSoundMuffler.Tile((ITileSoundMuffler) world.getTileEntity(new BlockPos(x, y, z)));
 
         } else if (id == GUI_SEARCH) {
             return new GuiSoundSearch();

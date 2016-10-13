@@ -1,14 +1,16 @@
 package dmillerw.sound.core.network;
 
-import cpw.mods.fml.common.network.simpleimpl.IMessage;
-import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
-import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import dmillerw.sound.api.IItemSoundMuffler;
 import dmillerw.sound.api.ITileSoundMuffler;
 import dmillerw.sound.api.SoundEntry;
+import dmillerw.sound.core.block.TileSoundMuffler;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
+import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
+import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 /**
  * @author dmillerw
@@ -24,9 +26,7 @@ public abstract class PacketSoundMuffler<T extends IMessage> implements IMessage
 
     public static void sendPacket(ITileSoundMuffler tileSoundMuffler, SoundEntry soundEntry, Type type) {
         PacketSoundMuffler.Tile packet = new PacketSoundMuffler.Tile();
-        packet.xCoord = tileSoundMuffler.getX();
-        packet.yCoord = tileSoundMuffler.getY();
-        packet.zCoord = tileSoundMuffler.getZ();
+        packet.blockPos = tileSoundMuffler.getPosition();
         packet.soundEntry = soundEntry;
         packet.type = type;
         packet.sendToServer();
@@ -65,28 +65,22 @@ public abstract class PacketSoundMuffler<T extends IMessage> implements IMessage
 
     public static class Tile extends PacketSoundMuffler<Tile> {
 
-        public int xCoord;
-        public int yCoord;
-        public int zCoord;
+        public BlockPos blockPos;
 
         @Override
         public void writeData(ByteBuf buf) {
-            buf.writeInt(xCoord);
-            buf.writeInt(yCoord);
-            buf.writeInt(zCoord);
+            buf.writeLong(blockPos.toLong());
         }
 
         @Override
         public void readData(ByteBuf buf) {
-            xCoord = buf.readInt();
-            yCoord = buf.readInt();
-            zCoord = buf.readInt();
+            blockPos = BlockPos.fromLong(buf.readLong());
         }
 
         @Override
         public void handleMessage(Tile message, MessageContext ctx) {
             World world = ctx.getServerHandler().playerEntity.worldObj;
-            ITileSoundMuffler tileSoundMuffler = (ITileSoundMuffler) world.getTileEntity(message.xCoord, message.yCoord, message.zCoord);
+            ITileSoundMuffler tileSoundMuffler = (ITileSoundMuffler) world.getTileEntity(message.blockPos);
 
             if (tileSoundMuffler != null) {
                 if (message.type == Type.ADD)
@@ -94,7 +88,7 @@ public abstract class PacketSoundMuffler<T extends IMessage> implements IMessage
                 else if (message.type == Type.REMOVE)
                     tileSoundMuffler.removeSoundEntry(message.soundEntry);
 
-                world.markBlockForUpdate(tileSoundMuffler.getX(), tileSoundMuffler.getY(), tileSoundMuffler.getZ());
+                ((TileSoundMuffler)tileSoundMuffler).markDirtyAndNotify();
             }
         }
     }
@@ -113,7 +107,7 @@ public abstract class PacketSoundMuffler<T extends IMessage> implements IMessage
 
         @Override
         public void handleMessage(Item message, MessageContext ctx) {
-            ItemStack held = ctx.getServerHandler().playerEntity.getHeldItem();
+            ItemStack held = ctx.getServerHandler().playerEntity.getActiveItemStack();
             if (held != null && held.getItem() instanceof IItemSoundMuffler) {
                 if (message.type == Type.ADD)
                     ((IItemSoundMuffler) held.getItem()).addSoundEntry(held, message.soundEntry);

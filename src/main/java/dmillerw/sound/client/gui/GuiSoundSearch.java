@@ -3,22 +3,24 @@ package dmillerw.sound.client.gui;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import dmillerw.sound.client.sound.SoundHelper;
+import dmillerw.sound.core.lib.ModInfo;
 import joptsimple.internal.Strings;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.PositionedSoundRecord;
-import net.minecraft.client.audio.SoundCategory;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StatCollector;
+import net.minecraft.util.text.TextFormatting;
 import org.apache.commons.lang3.ArrayUtils;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -27,7 +29,7 @@ import java.util.Set;
  */
 public class GuiSoundSearch extends GuiScreen {
 
-    private static final ResourceLocation GUI_BLANK = new ResourceLocation("soundmuffler++:textures/gui/search.png");
+    private static final ResourceLocation GUI_BLANK = new ResourceLocation(ModInfo.MOD_ID, "textures/gui/search.png");
 
     private static final int X_SIZE = 176;
     private static final int Y_SIZE = 166;
@@ -67,16 +69,16 @@ public class GuiSoundSearch extends GuiScreen {
         this.guiLeft = (this.width - X_SIZE) / 2;
         this.guiTop = (this.height - Y_SIZE) / 2;
 
-        this.searchField = new GuiTextField(mc.fontRenderer, guiLeft + LIST_X, guiTop + 11, LIST_X_END - LIST_X, 20);
+        this.searchField = new GuiTextField(-1, mc.fontRendererObj, guiLeft + LIST_X, guiTop + 11, LIST_X_END - LIST_X, 20);
         this.searchField.setFocused(true);
         this.searchField.setCanLoseFocus(false);
         this.searchField.setEnableBackgroundDrawing(false);
 
-        this.buttonList.add(buttonUp = new GuiUVButton(0, 153, 26, 176, 14, 14, 14, GUI_BLANK).setTooltip(StatCollector.translateToLocal("tooltip.scrollUp")));
-        this.buttonList.add(buttonDown = new GuiUVButton(1, 153, 46, 176, 28, 14, 14, GUI_BLANK).setTooltip(StatCollector.translateToLocal("tooltip.scrollDown")));
-        this.buttonList.add(buttonBack = new GuiUVButton(2, 153, 123, 176, 56, 14, 14, GUI_BLANK).setTooltip(StatCollector.translateToLocal("tooltip.back")));
-        this.buttonList.add(buttonAccept = new GuiUVButton(3, 153, 143, 176, 70, 14, 14, GUI_BLANK).setTooltip(StatCollector.translateToLocal("tooltip.select")));
-        this.buttonList.add(buttonPlay = new GuiUVButton(4, 153, 103, 176, 84, 14, 14, GUI_BLANK).setTooltip(StatCollector.translateToLocal("tooltip.preview")));
+        this.buttonList.add(buttonUp = new GuiUVButton(0, 153, 26, 176, 14, 14, 14, GUI_BLANK).setTooltip(I18n.format("tooltip.scrollUp")));
+        this.buttonList.add(buttonDown = new GuiUVButton(1, 153, 46, 176, 28, 14, 14, GUI_BLANK).setTooltip(I18n.format("tooltip.scrollDown")));
+        this.buttonList.add(buttonBack = new GuiUVButton(2, 153, 123, 176, 56, 14, 14, GUI_BLANK).setTooltip(I18n.format("tooltip.back")));
+        this.buttonList.add(buttonAccept = new GuiUVButton(3, 153, 143, 176, 70, 14, 14, GUI_BLANK).setTooltip(I18n.format("tooltip.select")));
+        this.buttonList.add(buttonPlay = new GuiUVButton(4, 153, 103, 176, 84, 14, 14, GUI_BLANK).setTooltip(I18n.format("tooltip.preview")));
 
         refresh();
     }
@@ -99,29 +101,34 @@ public class GuiSoundSearch extends GuiScreen {
         final int maxX = guiLeft + LIST_X_END + 5;
 
         for (int i=0; i<Math.min(listContents.size(), MAX_LINE_COUNT); i++) {
-            final int minY = guiTop + LIST_Y + (mc.fontRenderer.FONT_HEIGHT * i);
-            final int maxY = minY + mc.fontRenderer.FONT_HEIGHT;
+            final int minY = guiTop + LIST_Y + (mc.fontRendererObj.FONT_HEIGHT * i);
+            final int maxY = minY + mc.fontRendererObj.FONT_HEIGHT;
 
             if (selectedIndex == listOffset + i) {
-                GL11.glPushMatrix();
-                GL11.glDisable(GL11.GL_TEXTURE_2D);
-                Tessellator tessellator = Tessellator.instance;
-                tessellator.startDrawingQuads();
-                tessellator.setColorOpaque_I(0x333333);
-                tessellator.addVertex(minX, maxY, zLevel);
-                tessellator.addVertex(maxX, maxY, zLevel);
-                tessellator.addVertex(maxX, minY, zLevel);
-                tessellator.addVertex(minX, minY, zLevel);
-                tessellator.draw();
-                GL11.glEnable(GL11.GL_TEXTURE_2D);
-                GL11.glPopMatrix();
+                GlStateManager.pushMatrix();
+                GlStateManager.disableTexture2D();
+
+                Tessellator tessellator = Tessellator.getInstance();
+                VertexBuffer vertexBuffer = tessellator.getBuffer();
+
+                vertexBuffer.begin(7, DefaultVertexFormats.POSITION_COLOR);
+
+                vertexBuffer.color(51, 51, 51, 255);
+                vertexBuffer.pos(minX, maxY, zLevel);
+                vertexBuffer.pos(maxX, maxY, zLevel);
+                vertexBuffer.pos(maxX, minY, zLevel);
+                vertexBuffer.pos(minX, minY, zLevel);
+                vertexBuffer.finishDrawing();
+
+                GlStateManager.enableTexture2D();
+                GlStateManager.popMatrix();
             }
 
             SoundEntryString soundEntryString = listContents.get(listOffset + i);
             String string = soundEntryString.string;
             if (soundEntryString.end)
-                string = EnumChatFormatting.UNDERLINE + string + EnumChatFormatting.RESET;
-            mc.fontRenderer.drawString(string, guiLeft + LIST_X, guiTop + LIST_Y + (mc.fontRenderer.FONT_HEIGHT * i), soundEntryString.end ? 0xFF0000 : 0xFFFFFF);
+                string = TextFormatting.UNDERLINE + string + TextFormatting.RESET;
+            mc.fontRendererObj.drawString(string, guiLeft + LIST_X, guiTop + LIST_Y + (mc.fontRendererObj.FONT_HEIGHT * i), soundEntryString.end ? 0xFF0000 : 0xFFFFFF);
         }
 
         this.searchField.drawTextBox();
@@ -150,7 +157,7 @@ public class GuiSoundSearch extends GuiScreen {
     }
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) {
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         super.mouseClicked(mouseX - guiLeft, mouseY - guiTop, mouseButton);
 
         if (mouseButton != 0)
@@ -160,8 +167,8 @@ public class GuiSoundSearch extends GuiScreen {
         final int maxX = guiLeft + LIST_X_END;
 
         for (int i=0; i<Math.min(listContents.size(), MAX_LINE_COUNT); i++) {
-            final int minY = guiTop + LIST_Y + (mc.fontRenderer.FONT_HEIGHT * i);
-            final int maxY = minY + mc.fontRenderer.FONT_HEIGHT;
+            final int minY = guiTop + LIST_Y + (mc.fontRendererObj.FONT_HEIGHT * i);
+            final int maxY = minY + mc.fontRendererObj.FONT_HEIGHT;
 
             if (mouseX >= minX && mouseX <= maxX && mouseY >= minY && mouseY <= maxY) {
                 selectedIndex = listOffset + i;
@@ -232,7 +239,8 @@ public class GuiSoundSearch extends GuiScreen {
             GuiSoundMuffler.reopen();
         } else if (guiButton.id == 4) {
             SoundEntryString soundEntryString = listContents.get(selectedIndex);
-            Minecraft.getMinecraft().getSoundHandler().playSound(PositionedSoundRecord.func_147673_a(new ResourceLocation(soundEntryString.resourceDomain, soundEntryString.fullPath)));
+//            Minecraft.getMinecraft().getSoundHandler().getAccessor(new ResourceLocation(soundEntryString.resourceDomain, soundEntryString.fullPath));
+            //TODO: Sound preview
         }
     }
 
@@ -244,7 +252,7 @@ public class GuiSoundSearch extends GuiScreen {
         Set<SoundEntryString> temporarySet = Sets.newHashSet();
 
         String text = this.searchField.getText();
-        List<ResourceLocation> sounds = SoundHelper.getSoundsForCategory(SoundCategory.values());
+        Set<ResourceLocation> sounds = SoundHelper.getSoundKeys();
         for (ResourceLocation resourceLocation : sounds) {
             String path = resourceLocation.getResourcePath();
 

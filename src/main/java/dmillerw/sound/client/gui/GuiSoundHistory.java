@@ -1,20 +1,26 @@
 package dmillerw.sound.client.gui;
 
 import dmillerw.sound.client.sound.SoundHandler;
+import dmillerw.sound.core.lib.ModInfo;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.VertexBuffer;
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.StatCollector;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
+
+import java.io.IOException;
 
 /**
  * @author dmillerw
  */
 public class GuiSoundHistory extends GuiScreen {
 
-    private static final ResourceLocation GUI_BLANK = new ResourceLocation("soundmuffler++:textures/gui/history.png");
+    private static final ResourceLocation GUI_BLANK = new ResourceLocation(ModInfo.MOD_ID, "textures/gui/history.png");
 
     private static final int X_SIZE = 176;
     private static final int Y_SIZE = 166;
@@ -52,8 +58,8 @@ public class GuiSoundHistory extends GuiScreen {
         this.guiLeft = (this.width - X_SIZE) / 2;
         this.guiTop = (this.height - Y_SIZE) / 2;
 
-        this.buttonList.add(buttonSelect = new GuiUVButton(0, 153, 143, 176, 70, 14, 14, GUI_BLANK).setTooltip(StatCollector.translateToLocal("tooltip.select")));
-        this.buttonList.add(buttonBack = new GuiUVButton(1, 153, 123, 176, 56, 14, 14, GUI_BLANK).setTooltip(StatCollector.translateToLocal("tooltip.back")));
+        this.buttonList.add(buttonSelect = new GuiUVButton(0, 153, 143, 176, 70, 14, 14, GUI_BLANK).setTooltip(I18n.format("tooltip.select")));
+        this.buttonList.add(buttonBack = new GuiUVButton(1, 153, 123, 176, 56, 14, 14, GUI_BLANK).setTooltip(I18n.format("tooltip.back")));
     }
 
     @Override
@@ -65,25 +71,30 @@ public class GuiSoundHistory extends GuiScreen {
         final int maxX = guiLeft + LIST_X_END + 5;
 
         for (int i = 0; i < Math.min(SoundHandler.soundHistory.size(), MAX_LINE_COUNT); i++) {
-            final int minY = guiTop + LIST_Y + (mc.fontRenderer.FONT_HEIGHT * i);
-            final int maxY = minY + mc.fontRenderer.FONT_HEIGHT;
+            final int minY = guiTop + LIST_Y + (mc.fontRendererObj.FONT_HEIGHT * i);
+            final int maxY = minY + mc.fontRendererObj.FONT_HEIGHT;
 
             if (selectedIndex == i) {
-                GL11.glPushMatrix();
-                GL11.glDisable(GL11.GL_TEXTURE_2D);
-                Tessellator tessellator = Tessellator.instance;
-                tessellator.startDrawingQuads();
-                tessellator.setColorOpaque_I(0x333333);
-                tessellator.addVertex(minX, maxY, zLevel);
-                tessellator.addVertex(maxX, maxY, zLevel);
-                tessellator.addVertex(maxX, minY, zLevel);
-                tessellator.addVertex(minX, minY, zLevel);
-                tessellator.draw();
-                GL11.glEnable(GL11.GL_TEXTURE_2D);
-                GL11.glPopMatrix();
+                GlStateManager.pushMatrix();
+                GlStateManager.disableTexture2D();
+
+                Tessellator tessellator = Tessellator.getInstance();
+                VertexBuffer vertexBuffer = tessellator.getBuffer();
+
+                vertexBuffer.begin(7, DefaultVertexFormats.POSITION_COLOR);
+
+                vertexBuffer.color(51, 51, 51, 255);
+                vertexBuffer.pos(minX, maxY, zLevel);
+                vertexBuffer.pos(maxX, maxY, zLevel);
+                vertexBuffer.pos(maxX, minY, zLevel);
+                vertexBuffer.pos(minX, minY, zLevel);
+                vertexBuffer.finishDrawing();
+
+                GlStateManager.enableTexture2D();
+                GlStateManager.popMatrix();
             }
 
-            mc.fontRenderer.drawString(SoundHandler.soundHistory.get(i), guiLeft + LIST_X, guiTop + LIST_Y + (mc.fontRenderer.FONT_HEIGHT * i), 0xFFFFFF);
+            mc.fontRendererObj.drawString(SoundHandler.soundHistory.get(i), guiLeft + LIST_X, guiTop + LIST_Y + (mc.fontRendererObj.FONT_HEIGHT * i), 0xFFFFFF);
         }
 
         GL11.glPushMatrix();
@@ -106,7 +117,7 @@ public class GuiSoundHistory extends GuiScreen {
     }
 
     @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) {
+    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
         super.mouseClicked(mouseX - guiLeft, mouseY - guiTop, mouseButton);
 
         if (mouseButton != 0)
@@ -116,8 +127,8 @@ public class GuiSoundHistory extends GuiScreen {
         final int maxX = guiLeft + LIST_X_END;
 
         for (int i = 0; i < Math.min(SoundHandler.soundHistory.size(), MAX_LINE_COUNT); i++) {
-            final int minY = guiTop + LIST_Y + (mc.fontRenderer.FONT_HEIGHT * i);
-            final int maxY = minY + mc.fontRenderer.FONT_HEIGHT;
+            final int minY = guiTop + LIST_Y + (mc.fontRendererObj.FONT_HEIGHT * i);
+            final int maxY = minY + mc.fontRendererObj.FONT_HEIGHT;
 
             if (mouseX >= minX && mouseX <= maxX && mouseY >= minY && mouseY <= maxY) {
                 selectedIndex = i;

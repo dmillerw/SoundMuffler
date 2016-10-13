@@ -1,15 +1,16 @@
 package dmillerw.sound.api;
 
-import cpw.mods.fml.common.eventhandler.Event;
+import net.minecraftforge.fml.common.eventhandler.GenericEvent;
 
 /**
  * @author dmillerw
  */
-public class EventSoundMufflerTile extends Event {
+public class EventSoundMufflerTile extends GenericEvent<ITileSoundMuffler> {
 
     public ITileSoundMuffler tileSoundMuffler;
 
     public EventSoundMufflerTile(ITileSoundMuffler tileSoundMuffler) {
+        super(ITileSoundMuffler.class);
         this.tileSoundMuffler = tileSoundMuffler;
     }
 

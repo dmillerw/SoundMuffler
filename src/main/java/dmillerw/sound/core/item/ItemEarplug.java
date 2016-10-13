@@ -1,6 +1,7 @@
 package dmillerw.sound.core.item;
 
 import dmillerw.sound.core.TabSoundMuffler;
+import dmillerw.sound.core.lib.ModInfo;
 import net.minecraft.item.Item;
 
 /**
@@ -11,10 +12,10 @@ public class ItemEarplug extends Item {
     public ItemEarplug() {
         super();
 
-        setCreativeTab(TabSoundMuffler.TAB);
-        setMaxStackSize(1);
         setMaxDamage(0);
-        setUnlocalizedName("earplug");
-        setTextureName("soundmuffler++:earplugs");
+        setMaxStackSize(1);
+        setCreativeTab(TabSoundMuffler.TAB);
+
+        setUnlocalizedName(ModInfo.MOD_ID + ":earplug");
     }
 }

@@ -1,23 +1,29 @@
 package dmillerw.sound.core.item;
 
 import com.google.common.collect.Lists;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import dmillerw.sound.api.IItemSoundMuffler;
 import dmillerw.sound.api.SoundEntry;
 import dmillerw.sound.client.sound.SoundMuffled;
 import dmillerw.sound.core.TabSoundMuffler;
 import dmillerw.sound.core.handler.InternalHandler;
+import dmillerw.sound.core.lib.ModInfo;
 import net.minecraft.client.audio.ISound;
-import net.minecraft.client.audio.SoundCategory;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.EnumActionResult;
+import net.minecraft.util.EnumHand;
+import net.minecraft.util.SoundCategory;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.List;
 
@@ -29,35 +35,37 @@ public class ItemMagicalEarplugs extends Item implements IItemSoundMuffler {
     public ItemMagicalEarplugs() {
         super();
 
-        setCreativeTab(TabSoundMuffler.TAB);
-        setMaxStackSize(1);
         setMaxDamage(0);
-        setUnlocalizedName("magicalEarplugs");
-        setTextureName("soundmuffler++:earplugs");
+        setMaxStackSize(1);
+        setCreativeTab(TabSoundMuffler.TAB);
+
+        setUnlocalizedName(ModInfo.MOD_ID + ":magical_earplugs");
     }
 
     @Override
-    public ItemStack onItemRightClick(ItemStack itemStack, World world, EntityPlayer entityPlayer) {
-        if (entityPlayer.isSneaking()) {
-            InternalHandler.openConfigurationGUI(entityPlayer, 0, 0, 0);
+    public ActionResult<ItemStack> onItemRightClick(ItemStack itemStackIn, World worldIn, EntityPlayer playerIn, EnumHand hand) {
+        if (playerIn.isSneaking()) {
+            InternalHandler.openConfigurationGUI(playerIn, 0, 0, 0);
+            return new ActionResult<>(EnumActionResult.SUCCESS, itemStackIn);
         } else {
-            ItemStack currentArmor = entityPlayer.getCurrentArmor(1);
+            EntityEquipmentSlot entityequipmentslot = EntityLiving.getSlotForItemStack(itemStackIn);
+            ItemStack itemstack = playerIn.getItemStackFromSlot(entityequipmentslot);
 
-            if (currentArmor == null) {
-                entityPlayer.setCurrentItemOrArmor(4, itemStack.copy());
-                if (!entityPlayer.capabilities.isCreativeMode)
-                    itemStack.stackSize = 0;
+            if (itemstack == null) {
+                playerIn.setItemStackToSlot(entityequipmentslot, itemStackIn.copy());
+                itemStackIn.stackSize = 0;
+                return new ActionResult<>(EnumActionResult.SUCCESS, itemStackIn);
+            } else {
+                return new ActionResult<>(EnumActionResult.FAIL, itemStackIn);
             }
         }
-        return itemStack;
     }
 
     @Override
-    public boolean isValidArmor(ItemStack stack, int armorType, Entity entity) {
-        return armorType == 0;
+    public boolean isValidArmor(ItemStack stack, EntityEquipmentSlot armorType, Entity entity) {
+        return armorType == EntityEquipmentSlot.HEAD;
     }
 
-    /* IMAGICALEARMUFFS */
     @SideOnly(Side.CLIENT)
     @Override
     public ISound getMuffledSound(ItemStack itemStack, String name, ISound sound, SoundCategory soundCategory) {
@@ -71,7 +79,7 @@ public class ItemMagicalEarplugs extends Item implements IItemSoundMuffler {
 
         NBTTagList nbtTagList = nbtTagCompound.getTagList("entries", Constants.NBT.TAG_COMPOUND);
 
-        for (int i=0; i<nbtTagList.tagCount(); i++) {
+        for (int i = 0; i < nbtTagList.tagCount(); i++) {
             SoundEntry soundEntry = SoundEntry.readFromNBT(nbtTagList.getCompoundTagAt(i));
             if (soundEntry.nameMatches(name)) {
                 return new SoundMuffled(sound, soundEntry.volumeModifier);
@@ -95,7 +103,7 @@ public class ItemMagicalEarplugs extends Item implements IItemSoundMuffler {
 
         NBTTagList nbtTagList = nbtTagCompound.getTagList("entries", Constants.NBT.TAG_COMPOUND);
 
-        for (int i=0; i<nbtTagList.tagCount(); i++) {
+        for (int i = 0; i < nbtTagList.tagCount(); i++) {
             soundEntries.add(SoundEntry.readFromNBT(nbtTagList.getCompoundTagAt(i)));
         }
 
@@ -135,7 +143,7 @@ public class ItemMagicalEarplugs extends Item implements IItemSoundMuffler {
         NBTTagList newNBTTagList = new NBTTagList();
 
         boolean removed = false;
-        for (int i=0; i<nbtTagList.tagCount(); i++) {
+        for (int i = 0; i < nbtTagList.tagCount(); i++) {
             SoundEntry listEntry = SoundEntry.readFromNBT(nbtTagList.getCompoundTagAt(i));
             if (removed || !soundEntry.equals(listEntry)) {
                 newNBTTagList.appendTag(nbtTagList.getCompoundTagAt(i));

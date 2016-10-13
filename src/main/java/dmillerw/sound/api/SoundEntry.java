@@ -4,9 +4,6 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 
-import java.io.IOException;
-import java.util.Arrays;
-
 /**
  * @author dmillerw
  */
@@ -15,10 +12,7 @@ public class SoundEntry {
     public static SoundEntry fromBytes(ByteBuf buf) {
         PacketBuffer packetBuffer = new PacketBuffer(buf);
         int length = packetBuffer.readInt();
-        String entry = "";
-        try {
-            entry = packetBuffer.readStringFromBuffer(length);
-        } catch (IOException ex) {}
+        String entry = packetBuffer.readStringFromBuffer(length);
         int volumeModifier = packetBuffer.readInt();
         return new SoundEntry(entry, volumeModifier);
     }
@@ -43,10 +37,8 @@ public class SoundEntry {
 
     public void toBytes(ByteBuf buf) {
         PacketBuffer packetBuffer = new PacketBuffer(buf);
-        try {
-            packetBuffer.writeInt(name.length());
-            packetBuffer.writeStringToBuffer(name);
-        } catch (IOException ex) {}
+        packetBuffer.writeInt(name.length());
+        packetBuffer.writeString(name);
         packetBuffer.writeInt(volumeModifier);
     }
 
