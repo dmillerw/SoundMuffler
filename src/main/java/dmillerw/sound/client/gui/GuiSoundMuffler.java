@@ -13,16 +13,13 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
 import java.util.List;
@@ -141,7 +138,8 @@ public abstract class GuiSoundMuffler extends GuiScreen {
             final int minY = guiTop + LIST_Y + (mc.fontRendererObj.FONT_HEIGHT * i);
             final int maxY = minY + mc.fontRendererObj.FONT_HEIGHT;
 
-            if (selectedIndex == listOffset + i) {
+            //TODO: Why no work!?
+            /*if (selectedIndex == listOffset + i) {
                 GlStateManager.pushMatrix();
                 GlStateManager.disableTexture2D();
 
@@ -155,27 +153,33 @@ public abstract class GuiSoundMuffler extends GuiScreen {
                 vertexBuffer.pos(maxX, maxY, zLevel);
                 vertexBuffer.pos(maxX, minY, zLevel);
                 vertexBuffer.pos(minX, minY, zLevel);
-                vertexBuffer.finishDrawing();
+
+                tessellator.draw();
 
                 GlStateManager.enableTexture2D();
                 GlStateManager.popMatrix();
-            }
+            }*/
 
             SoundEntry soundEntry = soundEntryList.get(listOffset + i);
+            String name = soundEntry.name;
             String volume = String.valueOf(soundEntry.volumeModifier) + "%";
-            mc.fontRendererObj.drawString(soundEntry.name, guiLeft + LIST_X, guiTop + LIST_Y + (mc.fontRendererObj.FONT_HEIGHT * i), 0xFFFFFF);
+
+            if (selectedIndex == listOffset + i)
+                name = TextFormatting.UNDERLINE + "" + TextFormatting.YELLOW + name + TextFormatting.RESET;
+
+            mc.fontRendererObj.drawString(name, guiLeft + LIST_X, guiTop + LIST_Y + (mc.fontRendererObj.FONT_HEIGHT * i), 0xFFFFFF);
 
             // To offset the number display by half a pixel (woo, cheating)
-            GL11.glPushMatrix();
-            GL11.glTranslated(0, 0.75, 0);
+            GlStateManager.pushMatrix();
+            GlStateManager.translate(0, 0.75, 0);
             mc.fontRendererObj.drawString(volume, guiLeft + LIST_X_END - (mc.fontRendererObj.getStringWidth(volume)), guiTop + LIST_Y + (mc.fontRendererObj.FONT_HEIGHT * i), 0xFFFFFF);
-            GL11.glPopMatrix();
+            GlStateManager.popMatrix();
         }
 
-        GL11.glPushMatrix();
-        GL11.glTranslated(guiLeft, guiTop, 0);
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(guiLeft, guiTop, 0);
         super.drawScreen(mouseX - guiLeft, mouseY - guiTop, partial);
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
 
         for (int i = 0; i < this.buttonList.size(); ++i) {
             GuiButton guiButton = (GuiButton) this.buttonList.get(i);

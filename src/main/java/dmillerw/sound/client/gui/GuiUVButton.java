@@ -2,12 +2,11 @@ package dmillerw.sound.client.gui;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
 import net.minecraftforge.fml.client.config.GuiUtils;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 
 import java.util.Arrays;
 import java.util.Iterator;
@@ -64,10 +63,10 @@ public class GuiUVButton extends GuiButtonExt {
 
     private void drawHoveringText(Minecraft mc, List<String> text, int x, int y, FontRenderer fontRenderer) {
         if (!text.isEmpty()) {
-            GL11.glDisable(GL12.GL_RESCALE_NORMAL);
+            GlStateManager.disableRescaleNormal();
             RenderHelper.disableStandardItemLighting();
-            GL11.glDisable(GL11.GL_LIGHTING);
-            GL11.glDisable(GL11.GL_DEPTH_TEST);
+            GlStateManager.disableLighting();
+            GlStateManager.disableDepth();
             int k = 0;
             Iterator iterator = text.iterator();
 
@@ -120,10 +119,10 @@ public class GuiUVButton extends GuiButtonExt {
                 k2 += 10;
             }
 
-            GL11.glEnable(GL11.GL_LIGHTING);
-            GL11.glEnable(GL11.GL_DEPTH_TEST);
+            GlStateManager.enableLighting();
+            GlStateManager.enableDepth();
             RenderHelper.enableStandardItemLighting();
-            GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+            GlStateManager.enableRescaleNormal();
         }
     }
 }

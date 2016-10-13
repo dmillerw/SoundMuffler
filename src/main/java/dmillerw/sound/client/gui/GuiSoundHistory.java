@@ -5,13 +5,10 @@ import dmillerw.sound.core.lib.ModInfo;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.VertexBuffer;
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
 
 import java.io.IOException;
 
@@ -74,7 +71,8 @@ public class GuiSoundHistory extends GuiScreen {
             final int minY = guiTop + LIST_Y + (mc.fontRendererObj.FONT_HEIGHT * i);
             final int maxY = minY + mc.fontRendererObj.FONT_HEIGHT;
 
-            if (selectedIndex == i) {
+            //TODO: Why no work!?
+            /*if (selectedIndex == i) {
                 GlStateManager.pushMatrix();
                 GlStateManager.disableTexture2D();
 
@@ -88,19 +86,24 @@ public class GuiSoundHistory extends GuiScreen {
                 vertexBuffer.pos(maxX, maxY, zLevel);
                 vertexBuffer.pos(maxX, minY, zLevel);
                 vertexBuffer.pos(minX, minY, zLevel);
-                vertexBuffer.finishDrawing();
+
+                tessellator.draw();
 
                 GlStateManager.enableTexture2D();
                 GlStateManager.popMatrix();
-            }
+            }*/
 
-            mc.fontRendererObj.drawString(SoundHandler.soundHistory.get(i), guiLeft + LIST_X, guiTop + LIST_Y + (mc.fontRendererObj.FONT_HEIGHT * i), 0xFFFFFF);
+            String history = SoundHandler.soundHistory.get(i);
+            if (selectedIndex == i)
+                history = TextFormatting.UNDERLINE + "" + TextFormatting.YELLOW + history + TextFormatting.RESET;
+
+            mc.fontRendererObj.drawString(history, guiLeft + LIST_X, guiTop + LIST_Y + (mc.fontRendererObj.FONT_HEIGHT * i), 0xFFFFFF);
         }
 
-        GL11.glPushMatrix();
-        GL11.glTranslated(guiLeft, guiTop, 0);
+        GlStateManager.pushMatrix();
+        GlStateManager.translate(guiLeft, guiTop, 0);
         super.drawScreen(mouseX - guiLeft, mouseY - guiTop, partial);
-        GL11.glPopMatrix();
+        GlStateManager.popMatrix();
 
         for (int i = 0; i < this.buttonList.size(); ++i) {
             GuiButton guiButton = (GuiButton) this.buttonList.get(i);
